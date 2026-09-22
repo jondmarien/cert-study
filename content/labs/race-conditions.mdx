@@ -1,0 +1,27 @@
+---
+title: Race condition labs
+order: 70
+topic: Server-side
+summary: Race labs ask whether two overlapping requests both pass a check that should have allowed one success.
+lesson:
+  track: bscp
+  slug: race-conditions
+---
+
+## The figures
+
+![One request checks a single-use code, applies it, and marks it used before the next request arrives.](/labs/race-one-at-a-time.webp)
+
+One at a time, the second request sees the mark and stops. The rule holds.
+
+![Two requests both see the code as unused because the mark has not been written yet, so both apply it.](/labs/race-window.webp)
+
+Together, both requests read the old fact. That window is the bug. The rule was right. The update was late.
+
+## What those labs were comparing
+
+Pick one single-use action the lab provides. Send it once and record the state. That is the baseline.
+
+Send the same request as a Repeater group, the way the Academy exercise asks. Count how many responses claim success, then look at the state the limit was supposed to protect. Two successes mean the check and the update were separate steps.
+
+The vault frames that spell out packet timing stay in the vault. The observation you keep is the count of successes, and the state afterward. The fix is one database step, a lock, or an idempotency key.

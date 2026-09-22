@@ -1,0 +1,27 @@
+---
+title: WebSocket labs
+order: 80
+topic: Client-side
+summary: WebSocket labs split the handshake from the frames, and check origin on the handshake before any message.
+lesson:
+  track: bscp
+  slug: websockets
+---
+
+## The figure
+
+![A browser opens a WebSocket with an HTTP upgrade. Later frames travel on that socket and still need per-message checks.](/labs/websocket-flow.png)
+
+The Quartz note uses this picture for the channel. Cookies ride the handshake. Later frames are not new HTTP requests, so a CSRF token on some other route does not cover them.
+
+## What those labs were comparing
+
+In Proxy history, open the upgrade request.
+
+- Is `Origin` checked against the sites that should be able to open the socket?
+- Is the only session proof a cookie?
+- `Sec-WebSocket-Key` is there so caches do not mix connections. It is not a session secret.
+
+Then open WebSocket history and read one ordinary frame. Note whether it selects an object or carries text another user will see. That is the same question as access control or a client-side rendering bug, on a different channel.
+
+A page on another site that can open this socket and read the replies is cross-site WebSocket hijacking: a forged handshake plus a reply channel. The vault frames that build that page stay in the vault. Record the handshake headers and one frame.

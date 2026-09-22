@@ -1,0 +1,22 @@
+---
+title: SQL injection labs
+order: 60
+topic: Server-side
+summary: SQL labs compare a baseline row set with a variant that changes what the query returns. The working query stays in the lab.
+lesson:
+  track: bscp
+  slug: sql-injection
+---
+
+## What those labs were comparing
+
+The Quartz notes for this topic are mostly solved Repeater views. Those frames include a working query and lab credentials, so they are not republished here.
+
+Keep the comparison the notes were aiming at:
+
+- Baseline: the ordinary value, and whether a row appears.
+- A variant the lab is teaching, and whether the row set, the error, or the timing moved.
+- A login that succeeds without the account's password, which means the condition was no longer the password check.
+- A stored value that is parsed on a later request. Say which request actually reached the database.
+
+Write which input reached a query, what evidence moved, and which control would have kept the input in the value channel. Parameterized queries are that control. A stored procedure that still concatenates a string is the same bug.

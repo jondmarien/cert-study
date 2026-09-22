@@ -1,0 +1,25 @@
+---
+title: CORS labs
+order: 20
+topic: Client-side
+summary: CORS labs compare the origin you send with the origin the server reflects, and whether credentials are allowed.
+lesson:
+  track: bscp
+  slug: cors
+---
+
+## The figure
+
+![A browser on one origin asks another origin for data. The server answers with access-control headers, and the browser decides whether script may read the response.](/labs/cors-flow.png)
+
+The Quartz note uses this picture for the handshake. The browser can send the request either way. The headers decide whether script on the calling origin may read the body.
+
+## What those labs were comparing
+
+Send the lab's API request once with the lab's own origin and once with a foreign origin the lab allows you to use. Write down three facts:
+
+- Did `Access-Control-Allow-Origin` copy the foreign origin?
+- Did the response also allow credentials?
+- Was the allow list an exact origin, a prefix, a suffix, or the value `null`?
+
+A trusted origin that is only offered as plain HTTP, and a wildcard on an internal host, are the same kind of note: who was trusted, and what a script there can read. A script bug on an origin in the allow list can read what that allow list exposes. The vault frame that shows a page script reading the response stays in the vault.

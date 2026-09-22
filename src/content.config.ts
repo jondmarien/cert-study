@@ -2,7 +2,7 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
-import { loadCurriculum } from "./lib/curriculum";
+import { getLesson, loadCurriculum } from "./lib/curriculum";
 import { TRACK_IDS } from "./lib/types";
 
 loadCurriculum();
@@ -43,7 +43,39 @@ function lessonCollection(base: string) {
   });
 }
 
+const labSchema = z
+  .object({
+    title: z.string().min(3),
+    order: z.number().int().positive(),
+    topic: z.string().min(2),
+    summary: z.string().min(24),
+    lesson: z
+      .object({
+        track: z.enum(TRACK_IDS),
+        slug: z.string().regex(/^[a-z0-9-]+$/),
+      })
+      .strict(),
+  })
+  .strict()
+  .superRefine((lab, ctx) => {
+    if (!getLesson(lab.lesson.track, lab.lesson.slug)) {
+      ctx.addIssue({
+        code: "custom",
+        message: "lesson does not exist",
+        path: ["lesson"],
+      });
+    }
+  });
+
 export const collections = {
   bscp: lessonCollection("./content/bscp"),
   "security-plus": lessonCollection("./content/security-plus"),
+  labs: defineCollection({
+    loader: glob({
+      base: "./content/labs",
+      pattern: "*.mdx",
+      generateId: ({ entry }) => entry.split("/").pop()?.replace(/\.mdx$/, "") ?? entry,
+    }),
+    schema: labSchema,
+  }),
 };

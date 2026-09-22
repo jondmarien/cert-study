@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+
+import Base from "../../layouts/Base.astro";
+
+const labs = (await getCollection("labs")).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title="Labs" description="Concept figures from the BSCP learning-path labs, beside the lesson each one belongs to.">
+  <header class="max-w-3xl">
+    <p class="text-xs uppercase tracking-[0.16em] text-muted">From the Quartz notes</p>
+    <h1 class="mt-3 font-display text-5xl leading-none">Labs</h1>
+    <p class="mt-4 text-lg leading-8">
+      These pages keep the figures that explain an idea, and the comparison each lab was for. Solved
+      requests, payload lists, and overlay markup stay in the Quartz vault. Do the keystrokes in an
+      Academy lab.
+    </p>
+  </header>
+  <ul class="mt-8 grid gap-3">
+    {
+      labs.map((lab) => (
+        <li class="rounded-2xl border border-line bg-card p-4">
+          <p class="text-xs uppercase tracking-[0.16em] text-muted">{lab.data.topic}</p>
+          <a href={`/labs/${lab.id}`} class="mt-1 block font-display text-2xl hover:text-accent">
+            {lab.data.title}
+          </a>
+          <p class="mt-2 text-sm leading-6 text-muted">{lab.data.summary}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Base>

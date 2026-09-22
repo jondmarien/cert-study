@@ -289,13 +289,14 @@ No. Question practice stays in Drill. New files here are reading notes.
 
 ## 📈 Status & roadmap
 
-**Usable.** Both tracks are navigable. 57 lessons are ready notes. 11 are labeled outlines with a TODO list, sorted under their family and kept off the previous/next path. The BSCP learning-path notes from the Quartz desk are folded into the matching lessons. Race conditions and WebSockets are finished notes. Web LLM features is new.
+**Usable.** Both tracks are navigable. 57 lessons are ready notes. 11 are labeled outlines with a TODO list, sorted under their family and kept off the previous/next path. The BSCP learning-path notes from the Quartz desk are folded into the matching lessons. Race conditions and WebSockets are finished notes. Web LLM features is new. `/labs` is a separate section for the concept figures from those lab notes.
 
 - [x] Home, track hubs, lesson pages, search, local progress, dark mode
 - [x] Astro islands for React, Vue, Svelte, Solid, Preact, Lit, and Alpine
 - [x] BSCP ready notes for the high-yield Academy families and the five Burp tools
 - [x] Security+ ready notes across the five SY0-701 style domains
 - [x] Fold in the Quartz BSCP learning-path notes without replacing the existing lessons
+- [x] Labs section for the Quartz concept figures, linked from the header
 - [ ] Fill the labeled outlines (business logic, cache poisoning, host headers, API testing, prototype pollution, and the six Security+ stubs)
 - [ ] Adjust `BSCP_LICENSE_ENDS` if the real license date differs from 21 December 2026
 

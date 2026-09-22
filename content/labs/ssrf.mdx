@@ -1,0 +1,27 @@
+---
+title: SSRF labs
+order: 50
+topic: Server-side
+summary: SSRF labs show that the server made the request. The destination list in the vault stays there.
+lesson:
+  track: bscp
+  slug: ssrf
+---
+
+## The figure
+
+![A user sends a URL to the application. The application fetches that URL from the server, including toward an internal host the user cannot route to.](/labs/ssrf-flow.webp)
+
+The Quartz note uses this picture for the position of the request. The impact is who the server can reach, not a catalog of addresses.
+
+## What those labs were comparing
+
+Confirm the feature with the lab's intended URL first. That response is the baseline.
+
+- Visible: the body or an error shows the fetch. Compare a destination the lab names by role, such as its internal service.
+- Blind: the response looks ordinary, and the evidence is an out-of-band lookup. One Collaborator hostname, one field, then poll.
+- Partial input: you supply a host or a path and the server builds the rest of the URL.
+- A document or a Referer that some other component fetches.
+- A text filter that disagrees with the parser, or a redirect whose second hop was not checked.
+
+The vault frame that lists URL spellings for a block list stays in the vault. Record whether a fetch happened, and whether it happened after parsing and after redirects.

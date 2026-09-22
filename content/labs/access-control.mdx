@@ -1,0 +1,26 @@
+---
+title: Access control labs
+order: 30
+topic: Server-side
+summary: Access-control labs keep the session still and change one identifier, or keep the identifier and change the session.
+lesson:
+  track: bscp
+  slug: access-control
+---
+
+## The figure
+
+![Authentication, then session management, then access control. Broken access control is marked critical because the last check is missing.](/labs/access-control-flow.png)
+
+The Quartz note uses this picture to keep the three checks in order. A login does not answer whether this request may touch this object.
+
+## What those labs were comparing
+
+Use two lab accounts when the lab provides them.
+
+- Horizontal: same session, a different object id. Record whether the other account's marker comes back.
+- Vertical: a high-privilege request from history, sent again with a low-privilege session, changing nothing else. A hidden link that still answers is a missing server-side check.
+- A role stored in a cookie, a hidden field, or a query flag. If changing that value changes what the server allows, the decision lived in the client.
+- A long random id shown on a page you can already open. Harder to guess is not the same as a check.
+
+The vault frames that walk an administrator password reset stay in the vault. Write the comparison: whose session, whose object, what came back.

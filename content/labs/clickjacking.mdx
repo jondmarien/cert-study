@@ -1,0 +1,25 @@
+---
+title: Clickjacking labs
+order: 10
+topic: Client-side
+summary: Framing labs compare a decoy click with the real control underneath. The overlay markup stays in the Academy lab.
+lesson:
+  track: bscp
+  slug: clickjacking
+---
+
+## The figure
+
+![Two browser layers. A decoy page sits in front of a framed target page, and the click lands on the framed control.](/labs/clickjacking-layers.webp)
+
+The Quartz note uses this picture for the definition. One layer is what the person thinks they are clicking. The other is the real site, framed, and the click reaches a control on that site. The session is genuine. The lie is which pixels they saw.
+
+## What those labs were comparing
+
+- A single framed control lined up with one decoy button. Record whether the response carried a framing header, and which one.
+- Two steps, such as adding an item and then confirming it. Each step is its own framed control.
+- A form that arrives already filled because the values were in the URL, so the remaining click is submit.
+- A script that tries to notice it is framed. It only runs when JavaScript runs. The header is the control you trust.
+- A framed page that also carries another client-side bug. The framing policy still has to be on that page. The second bug stays in its own note.
+
+The vault screenshots of the overlay stylesheet and of Clickbandit's generated file stay in the vault. Build that overlay inside the Academy lab if the exercise asks for it.
