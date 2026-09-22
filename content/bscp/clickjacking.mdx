@@ -55,3 +55,19 @@ Send `frame-ancestors` with the origins that genuinely need to embed the page, o
 Thinking a CSRF token solved framing. Applying the header only to HTML documents and forgetting a sensitive route. Using a JavaScript frame-buster as the only defense. Confusing clickjacking with "UI redress" trivia and missing the header check, which is the whole exam point.
 
 </Pitfall>
+
+## From the learning path
+
+The February 2026 learning-path notes add cases this page should keep next to the header check.
+
+A single click is the simple case. Some actions need two: put an item in a basket, then confirm the order. Each step is its own framed control, lined up with its own decoy. Both clicks are still real clicks on the real site, in the victim's real session. A CSRF token does not see the lie, because the session is genuine and the requests stay on the target origin.
+
+Some forms are already filled when the page loads, because the values rode in on the URL. The framed page can show the attacker's values. The only thing left for the victim is the submit control.
+
+`X-Frame-Options: deny` and CSP `frame-ancestors 'none'` ask for the same thing. `sameorigin` and `frame-ancestors 'self'` ask for the same thing. The older `allow-from` form names one site, and browsers do not implement it consistently, so a named allow list belongs in `frame-ancestors`.
+
+A frame-busting script tries to notice that it is not the top window, force frames to be visible, or warn the person. It runs only if JavaScript runs. The page that created the frame can limit what the framed page is allowed to do, so the script is not a control you count on.
+
+Burp includes Clickbandit for the Academy exercise. It watches clicks in the lab and builds an overlay there. Record the framing headers in these notes. Leave the overlay in the lab.
+
+Clickjacking can also carry a second client-side bug. The framed address is one that already does something harmful in the victim's session when the click lands. The framing policy still has to be present on that page. The second bug stays in its own note.

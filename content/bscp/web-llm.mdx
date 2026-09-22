@@ -1,0 +1,66 @@
+---
+title: Web LLM features
+family: Client-side
+order: 320
+status: ready
+minutes: 16
+summary: A site that lets a model read untrusted text and call tools has turned that text into instructions with the model's privileges.
+objectives:
+  - Separate a direct prompt from instructions hiding in retrieved content
+  - Explain why a tool the model can call must enforce its own authorization
+  - Keep secrets out of training data and out of the prompt as a control
+academy: Web LLM attacks
+related:
+  - track: bscp
+    slug: access-control
+  - track: bscp
+    slug: cross-site-scripting
+  - track: security-plus
+    slug: data-protection
+tags:
+  - llm
+  - injection
+---
+
+## Core idea
+
+A large language model used on a site is a component that continues text. The application wraps it in a chat box, a summary button, or a support agent, and often gives it tools: look up an order, send a mail, call an internal API. The model does not enforce policy. It follows the text it was given, including text the user did not type.
+
+Two inputs matter. A direct prompt is what the person typed. An indirect prompt is instructions sitting in something the model was asked to read: a web page, an email, a product review, a file, or the result of a tool. The user asked for a summary. The document asked for an account change. If the model can call that tool, the summary request can become the change. The user did not ask for the change. The untrusted document did.
+
+That is the same trust mistake as other notes, with a new carrier. Untrusted content became instructions. The impact depends on which tools and which data the model can reach.
+
+## What to look for
+
+- Every place text enters the model: the chat box, and also retrieved mail, pages, files, and tool results
+- The list of tools, and which credentials those tools use
+- A tool that checks nothing because "the model will only call it for the right user"
+- Training or retrieval data that includes secrets, other users' records, or raw support tickets
+- Model output that the page inserts into HTML. A summary can become a client-side bug if the page trusts it as markup
+- A system prompt that says "do not do that" as the only barrier
+
+<Lab>
+
+In the Academy lab, map the inputs before you type anything clever. List the direct box and every indirect source the feature reads. List the tools the lab says the model can call, and what each tool is allowed to change.
+
+Then follow the lab's exercise for that feature. Write which input carried the instruction, which tool ran, and which server-side check was missing. Do not keep example prompts in this repo. The lab has the exercise. Your note keeps the map.
+
+</Lab>
+
+<Defend>
+
+Treat every tool as a public API. Authenticate and authorize on the service, with the caller's privileges, not with a hope that the model will refuse. Give the model the narrowest tool list and the narrowest credentials that the feature needs. Separate system instructions from tool output from the user, and require a person to confirm high-impact actions, especially when the trigger came from retrieved content.
+
+Do not put secrets, other people's data, or raw tickets into training or retrieval. Feed the model only what the least privileged reader of that answer should see. Filter sensitive patterns on the way out. A sentence in the prompt is not a control. Attackers can ask the model to ignore it, wrap the request in a story, or hide the instruction in the document being summarized. The allow list and the confirmation live outside the model.
+
+</Defend>
+
+<Pitfall>
+
+Calling the chat box the only input. Trusting a system prompt as a firewall. Letting the model hold a privileged API key. Training on the data you would not show a stranger. Rendering the model's reply as HTML. Testing extraction ideas against a real assistant that can see private data.
+
+</Pitfall>
+
+## From the learning path
+
+The January 2026 learning-path notes define the model, indirect injection, tool use, training-data exposure, and the "do not trust the prompt" rule. They also describe a detection order worth keeping: find every input, including retrieved content; find every API and data store the model can touch; then use the lab to probe that surface. Leaks happen when a secret was in the training or retrieval set and the reply is willing to continue it. The fix starts by keeping that secret out of the set.

@@ -66,3 +66,11 @@ Use parameterized queries for every dynamic value. Keep identifiers and sort col
 Calling every database error an injection. Ignoring a parameter because it is numeric. Forgetting that a stored value can be parsed on a later page. Treating a filter that blocks one keyword as a fix. Moving on after the first lab syntax works, without being able to explain the evidence in words.
 
 </Pitfall>
+
+## From the learning path
+
+The January 2026 learning-path notes add two reminders next to prepared statements.
+
+A stored procedure is not a fix unless its parameters are bound the same way a prepared statement binds them. A procedure that concatenates a string is the same bug, moved into the database.
+
+The impact is not only rows. Some engines can be asked to run operating-system commands, which is the command-injection note reached through the database account. A least-privilege account limits that blast. It does not replace binding the value.

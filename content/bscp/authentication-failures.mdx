@@ -60,3 +60,13 @@ Store passwords with a slow, salted password hash. Use one generic failure messa
 Mixing up the three attack ideas in an exam answer. Pasting leaked password dumps anywhere near a study repo. Treating lockout as the complete defense against stuffing. Measuring a timing gap once and calling it a user enumeration bug. Attacking a real login to "try a few passwords."
 
 </Pitfall>
+
+## From the learning path
+
+The January 2026 learning-path notes draw the line this page uses and then stay on the password check.
+
+Authentication is the visible question: who is this. Authorization is usually invisible: what may they do. Authentication runs first. A correct login does not answer the authorization question. That question is the access-control note.
+
+Online guessing includes a dictionary of likely passwords, not only every possible string. People also bend a strict composition rule into a predictable shape, and a forced rotation often becomes a small edit of the previous password. Those habits are why a breached-password check and MFA matter more than a clever character rule.
+
+Usernames also leak from public profiles, author names, and error text that distinguishes "no such user" from "wrong password." The lab section already compares those two responses. Do not build a list of likely names in this repo.

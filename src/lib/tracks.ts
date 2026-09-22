@@ -46,7 +46,8 @@ const bscp: TrackInfo = {
     },
     {
       name: "Client-side",
-      blurb: "Browser rules: what the client enforces, what it ignores, and what the server still has to check.",
+      blurb:
+        "Browser rules: what the client enforces, what it ignores, and what the server still has to check, including model features that follow untrusted text.",
     },
   ],
   startHere: ["how-to-study", "burp-proxy", "sql-injection", "access-control"],

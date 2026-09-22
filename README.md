@@ -155,7 +155,7 @@ cert-study/
 | **`src/lib/curriculum.ts`** | Reads `content/`, validates frontmatter, builds search text, and picks previous/next among **ready** lessons only. |
 | **`src/lib/tracks.ts`** | Track copy, family names, and the start-here slugs. A lesson `family` must match a name here. |
 | **`src/lib/study-config.ts`** | `BSCP_LICENSE_ENDS`. Change this if the real Burp Suite Professional end date differs. |
-| **`content/`** | The curriculum. 54 ready notes and 13 labeled outlines (67 files). |
+| **`content/`** | The curriculum. 57 ready notes and 11 labeled outlines (68 files). |
 
 To add an island, put the component in the matching folder and use a `client:*` directive. React, Preact, and Solid all speak JSX, so `astro.config.mjs` limits each integration to its own folder. Vue and Svelte are picked up from their file extensions. Alpine is available on any page. Lit elements are defined in `src/components/lit/` and loaded with a `<script>` tag, which is the current Astro path for Lit.
 
@@ -289,13 +289,14 @@ No. Question practice stays in Drill. New files here are reading notes.
 
 ## 📈 Status & roadmap
 
-**Usable.** Both tracks are navigable. 54 lessons are ready notes. 13 are labeled outlines with a TODO list, sorted under their family and kept off the previous/next path.
+**Usable.** Both tracks are navigable. 57 lessons are ready notes. 11 are labeled outlines with a TODO list, sorted under their family and kept off the previous/next path. The BSCP learning-path notes from the Quartz desk are folded into the matching lessons. Race conditions and WebSockets are finished notes. Web LLM features is new.
 
 - [x] Home, track hubs, lesson pages, search, local progress, dark mode
 - [x] Astro islands for React, Vue, Svelte, Solid, Preact, Lit, and Alpine
 - [x] BSCP ready notes for the high-yield Academy families and the five Burp tools
 - [x] Security+ ready notes across the five SY0-701 style domains
-- [ ] Fill the labeled outlines (business logic, race conditions, cache poisoning, host headers, API testing, WebSockets, prototype pollution, and the six Security+ stubs)
+- [x] Fold in the Quartz BSCP learning-path notes without replacing the existing lessons
+- [ ] Fill the labeled outlines (business logic, cache poisoning, host headers, API testing, prototype pollution, and the six Security+ stubs)
 - [ ] Adjust `BSCP_LICENSE_ENDS` if the real license date differs from 21 December 2026
 
 ---

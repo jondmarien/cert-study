@@ -57,3 +57,19 @@ Allow-list exact origins. Reflect one of them only if it is on the list. Allow c
 Thinking CORS headers stop attacks the way a firewall would. The absence of CORS headers is the restrictive default. Confusing CSRF and CORS in an exam answer. Assuming a wildcard plus cookies works, or assuming it fails, without looking at the actual headers. Testing this by loading a real bank in a page you host.
 
 </Pitfall>
+
+## From the learning path
+
+The January 2026 learning-path notes spell out a few misconfigurations this page only named.
+
+An origin is scheme, host, and port together. A different port is already a different origin.
+
+An allow list that matches a suffix will accept a name that merely ends with your domain. An allow list that matches a prefix will accept your name as the start of someone else's domain. Compare the whole origin, exactly.
+
+`null` is a real Origin value. Browsers send it for sandboxed documents, `file` URLs, some redirects, and some serialized data. Putting `null` on the allow list allows those cases.
+
+A trusted origin that is only offered over plain HTTP drags every problem of an unencrypted page into your credentialed responses. If you meant the site, trust the HTTPS origin.
+
+A wildcard without credentials does not attach the victim's cookies, so it does not read their account. It still matters on an intranet. An outside browser cannot open that host directly. A browser already on the network can be asked to read a response the wildcard just permitted.
+
+A correct allow list still trusts every origin on it as script. A script bug on that origin can read what you exposed, including a sibling host you added for convenience. Sensitive responses should stay off cross-origin reads unless that other origin is held to the same standard as this one. CORS is not a substitute for the session check.
