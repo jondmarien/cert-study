@@ -1,0 +1,60 @@
+---
+title: File upload
+family: Server-side
+order: 170
+status: ready
+minutes: 15
+summary: Upload bugs are about what the server believes a file is, where it stores the bytes, and whether anything later executes or parses them.
+objectives:
+  - Separate validation of type, content, and storage location
+  - Explain why a client-supplied type is not evidence
+  - Connect upload behavior to path traversal and parsing bugs
+academy: File upload vulnerabilities
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: path-traversal
+  - track: bscp
+    slug: xxe
+tags:
+  - upload
+  - files
+---
+
+## Core idea
+
+An upload is untrusted bytes plus a name the client chose. The server has to decide whether to keep them, where to put them, and what will later open them. The bugs sit in those decisions. Trusting the browser's content type, trusting the extension, storing the file where the web server will execute it, or later parsing it with a powerful parser (XML, archive, image) are the usual failures.
+
+This is not a note about webshells. The concept is the trust decision. If the application only needed a picture, the stored object should be incapable of being executed as code, and a parser later in the pipeline should be ready for hostile input.
+
+## What to look for
+
+- Where the file is stored, if an error or a subsequent URL reveals it
+- Whether the download URL is built from the client filename (see path traversal)
+- Whether the server rewrites the name and the content type, or echoes what the client sent
+- A second step that processes the file: resize, unzip, import, preview
+- Size limits and what happens when they are missing. Availability is part of the feature, not a separate topic you skip
+- Access control on the retrieved file. An upload that anyone can fetch by guessing a name is an authorization bug wearing a file-upload coat
+
+<Lab>
+
+Upload the kind of file the lab says the feature wants. Record the request in Proxy history: the filename the client sent, the content type the client sent, and the URL that later fetches the object. That is the baseline.
+
+In Repeater, compare what changes when one of those client-controlled facts changes, following the lab. Watch whether the stored URL, the processing step, or the retrieval response changes. Describe the decision the server failed to make. Do not store an executable sample in this repo, and do not upload anything to a host outside the lab.
+
+If the lab's processing step is an XML or archive parser, switch to that topic's note for the parser question. The upload was only the delivery.
+
+</Lab>
+
+<Defend>
+
+Store files outside the web root, under a generated name, with an allow-listed type checked by content as well as by extension. Serve them from a domain that does not run your application, with a content type that the browser will not execute as script. Enforce size limits. Authorize every download. Treat the parser that later reads the file as a separate trust boundary.
+
+</Defend>
+
+<Pitfall>
+
+Believing the browser's file picker restricted the type. Stopping once the extension was rewritten. Ignoring the retrieval URL. Forgetting that a "harmless" format can still be a bomb for a parser. Testing uploads against real sites because the control is easy to click.
+
+</Pitfall>

@@ -1,0 +1,32 @@
+---
+title: Host header attacks
+family: Server-side
+order: 1040
+status: outline
+minutes: 8
+summary: Outline only. The Host header is client-influenced, and some apps still use it to build links or pick a tenant.
+objectives:
+  - Explain why Host is not a trustworthy source of the site's own name
+  - Connect password-reset links and caches to that mistake
+related:
+  - track: bscp
+    slug: web-cache-poisoning
+  - track: bscp
+    slug: authentication-failures
+tags:
+  - outline
+  - host
+academy: HTTP Host header attacks
+---
+
+## TODO
+
+Write the concept. Leave lab syntax in the Academy exercise.
+
+## Checklist
+
+- The browser sends `Host`. A proxy may also see `X-Forwarded-Host`. Neither is proof of the name the application should call itself.
+- Password-reset and email links built from that header can point at a name the requester chose. The bug is the link builder.
+- Virtual hosting and multi-tenant routing that trust the header can select the wrong site. The defender's fix is a configured canonical name, not the request's copy of it.
+- Cache interaction belongs in the cache-poisoning outline.
+- Lab work stays on the lab host. Rewriting Host against a real tenant is out of scope.

@@ -1,0 +1,32 @@
+---
+title: Business logic flaws
+family: Server-side
+order: 1010
+status: outline
+minutes: 8
+summary: Outline only. Logic flaws are rules the application forgets to enforce, not a parser bug.
+objectives:
+  - Define a logic flaw as a missing business rule
+  - List the flows worth mapping before this note is written up
+related:
+  - track: bscp
+    slug: access-control
+  - track: bscp
+    slug: reading-a-web-app
+tags:
+  - outline
+  - logic
+academy: Business logic vulnerabilities
+---
+
+## TODO
+
+Replace this checklist with a finished note. Do not add exploit steps.
+
+## Checklist
+
+- A logic flaw is a workflow that allows a valid-looking action the business rule forbids: negative quantities, skipped payment, reused one-time codes, or a coupon applied twice.
+- The map is the multi-step flow in order. The evidence is a final state the application should have rejected.
+- In Burp, Repeater is for replaying one step out of order or twice. Compare the resulting state with a baseline purchase or transfer the lab considers honest.
+- Defenders enforce the rule on the server at the moment of the state change, not in the browser, and they make the transaction idempotent where a double submit would matter.
+- Cross-link the finished note to access control. A logic flaw can exist even when every object belongs to the caller.

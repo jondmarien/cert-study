@@ -1,0 +1,32 @@
+---
+title: Prototype pollution
+family: Client-side
+order: 1070
+status: outline
+minutes: 8
+summary: Outline only. Prototype pollution is a merge of untrusted fields into an object's shared prototype.
+objectives:
+  - Define a prototype as shared default state
+  - Explain why a recursive merge of user JSON can change later lookups
+related:
+  - track: bscp
+    slug: dom-based-issues
+  - track: security-plus
+    slug: vulnerability-types
+tags:
+  - outline
+  - prototype
+academy: Prototype pollution
+---
+
+## TODO
+
+Keep the finished note free of gadget objects.
+
+## Checklist
+
+- In JavaScript, objects can inherit properties from a shared prototype. Polluting that prototype changes lookups for other objects in the same realm.
+- The usual entry is a deep merge or a query parser that treats user-controlled keys as paths, including the key that points at the prototype.
+- Client-side impact often becomes a DOM sink later. Server-side impact depends on whether the process shares the polluted object with privileged logic.
+- Defenders use objects without a prototype, allow-listed keys, and libraries that refuse special keys. Freezing the prototype is a mitigation with compatibility costs.
+- This is an injection into an object graph, closer in spirit to deserialization than to XSS, even when the visible effect is XSS.

@@ -1,0 +1,59 @@
+---
+title: Information disclosure
+family: Server-side
+order: 220
+status: ready
+minutes: 12
+summary: "Disclosure is any channel that tells an outsider something the application meant to keep: errors, backups, comments, and overly honest headers."
+objectives:
+  - List the common channels that leak implementation detail
+  - Decide which leaks change what you would test next
+  - Tie each leak to a quieter production default
+academy: Information disclosure
+related:
+  - track: security-plus
+    slug: data-protection
+  - track: bscp
+    slug: path-traversal
+  - track: bscp
+    slug: reading-a-web-app
+tags:
+  - disclosure
+---
+
+## Core idea
+
+Information disclosure is not one bug. It is a set of channels that reveal version numbers, file paths, internal hostnames, user existence, or the text of a query. Some of that is low impact on its own. Some of it tells you which family of bug is worth a careful look. The skill is to notice the channel and to judge whether it changes a decision.
+
+BSCP labs often hide a useful fact in a place a normal user still receives: a comment, a verbose error, a backup file left beside the site, a different response for a valid username than for an invalid one. You are practicing attention, not a secret trick.
+
+## What to look for
+
+- Error pages that name a framework, a path, a query, or a stack
+- HTML comments and script bundles that mention unfinished routes
+- Differences in response timing or wording that confirm whether an account exists
+- Extra files a deployment tool left behind, which you only pursue inside the lab's own file list or the lab's instructions
+- Headers that announce a precise version of a component with a known class of weakness
+- Debug parameters that the production configuration was supposed to ignore
+
+A version banner is a lead. It becomes interesting when you can connect it to a behavior you can observe in the lab.
+
+<Lab>
+
+During the mapping pass, skim responses for comments and error text. When an error appears, send the baseline request that does not error and keep both in Repeater so the difference is obvious.
+
+Write down the fact that leaked and the decision it affects. "The error names the database engine" matters if you are about to study the query boundary. "The header names the framework" matters if the lab is about that framework's default route. Do not go hunting backup files on hosts outside the lab. If the lab includes them, they will be part of the exercise, and your note can say "an alternate file exposed source" without pasting the source.
+
+</Lab>
+
+<Defend>
+
+Return generic errors to browsers. Log details on the server, with access control on the log. Strip comments and source maps from production builds. Turn off debug modes. Give authentication failures a single response shape. Remove deployment artifacts. Version headers are a product decision: if you do not need the client to know, do not send them.
+
+</Defend>
+
+<Pitfall>
+
+Collecting version numbers and calling that a finding. Ignoring username differences because they feel small. Pasting stack traces into a shared note. Scanning for backup filenames outside the lab. Missing the disclosure that is inside an API response field rather than an HTML comment.
+
+</Pitfall>

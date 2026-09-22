@@ -1,0 +1,72 @@
+---
+title: How to study this track
+family: Method
+order: 10
+status: ready
+minutes: 16
+summary: How to use these notes with PortSwigger Academy labs and a Burp project, without turning the desk into a script book.
+objectives:
+  - Separate concept notes from the lab where you try a specific input
+  - Keep a repeatable note for every interesting request
+  - Plan the 90-day window around labs you are allowed to run
+related:
+  - track: security-plus
+    slug: general-security-concepts
+  - track: bscp
+    slug: scope-and-ethics
+tags:
+  - method
+  - labs
+---
+
+## Core idea
+
+BSCP is a performance exam. You are given an application and a limited time, and you have to explain its behavior well enough to reach the objectives. Reading alone will not do that. Neither will a folder of copied requests. The split that works is simple: this desk is where you can say, in your own words, what a bug family means and which Burp tool you would open. The Academy lab is where you try the specific input the lab is teaching.
+
+Treat each topic as three passes. First, read the note until you can state the trust boundary in one sentence. Second, do the matching Academy labs and write down what changed between a baseline request and a variant: status, length, time, and where a value was reflected. Third, close the lab and explain the control that would have made the exercise impossible. If you cannot do the third pass, the lab was a sequence of clicks.
+
+## What to look for
+
+Your notes should answer the same questions every time:
+
+- Which component made a security decision: browser, edge proxy, app server, or database?
+- Which piece of data did it trust that an outsider can influence?
+- What evidence would show the decision changed?
+- What would a defender change so the decision no longer depends on that data?
+
+<Lab>
+
+Open a fresh Burp project per lab, set the target scope to that lab host, and keep the intercept off unless you have a reason to pause a single request. Work from Proxy history into Repeater. Change one thing, send again, and write a line in the lab notebook before you change something else.
+
+```
+Host:
+Endpoint:
+Parameter or header:
+Baseline status / length / time:
+What I changed:
+What changed in the response:
+Which component trusted the input:
+Control that would have stopped it:
+```
+
+Logger is the place you reconstruct the session afterward. Collaborator is only for cases where the interesting event is a request the server makes, not a response you can already see.
+
+</Lab>
+
+<Defend>
+
+The habit you are building is the same one a defender uses in a code review: name the boundary, name the untrusted data, and name the check. If a note starts sounding like a recipe, stop and rewrite it as a comparison and a control.
+
+</Defend>
+
+<Pitfall>
+
+Collecting labs without a written baseline. Skipping the "what would have stopped this" line. Studying topics in isolation from the Burp tool you will actually use to see them. Treating outlines on this desk as if they were finished notes.
+
+</Pitfall>
+
+## A practical order
+
+Start with scope, mapping, and the five Burp tools. Then sessions and access control, because almost every later lab sits on top of an identity. Then the server-side families, client-side families, and the conceptual topics (deserialization, request smuggling) where the point is to recognize the shape, not to memorize a syntax. Outlines at the bottom of each family are on the map so you can see the gap. They are not coverage.
+
+The home-page reminder uses a planning date for Burp Pro. Edit it if your license ends on a different day, and spend the license on labs rather than on rereading the same note.

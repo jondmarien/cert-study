@@ -1,0 +1,32 @@
+---
+title: PKI and certificates
+family: General concepts
+order: 1020
+status: outline
+minutes: 8
+summary: Outline only. PKI is the system that lets strangers trust a public key. The crypto note stops just short of it.
+objectives:
+  - Define a certificate as a signed binding between a name and a key
+  - List the trust failures a finished note should cover
+related:
+  - track: security-plus
+    slug: cryptography-basics
+  - track: bscp
+    slug: jwt-issues
+tags:
+  - outline
+  - pki
+---
+
+## TODO
+
+Concept note only. No instructions for minting a rogue authority.
+
+## Checklist
+
+- A certificate binds a public key to a subject, signed by an issuer. Trust comes from trusting that issuer, directly or through a chain.
+- Validation is more than "not expired." The name has to match, the chain has to be valid, and revocation has to be considered.
+- Private keys stay private. A certificate is public. Mixing those up is a common exam miss. The cryptography note introduces the distinction.
+- Use cases to mention later: TLS server identity, code signing, and client certificates as an authentication factor.
+- Operational issues: expiration, rotation, and what breaks when a widely trusted issuer is distrusted. Those are availability problems caused by an identity control.
+- Do not include steps for installing a hostile root or for forging a signature.

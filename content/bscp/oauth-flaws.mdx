@@ -1,0 +1,60 @@
+---
+title: OAuth flaws
+family: Authentication
+order: 250
+status: ready
+minutes: 15
+summary: OAuth hands a grant to another application. The flaws are loose redirects, missing state, and tokens that leak or that mean more than the user agreed.
+objectives:
+  - Name the roles in an authorization-code flow without memorizing a vendor
+  - Explain what the state parameter and the redirect URI are for
+  - Recognize when a token is being treated as a password
+academy: OAuth authentication
+related:
+  - track: security-plus
+    slug: identity-and-access
+  - track: security-plus
+    slug: third-party-risk
+  - track: bscp
+    slug: jwt-issues
+tags:
+  - oauth
+  - authentication
+---
+
+## Core idea
+
+OAuth is a way for a user to grant one application limited access at another service, without giving the first application their password. In the authorization-code flow, the user is sent to the authorization server, approves a scope, and is redirected back to the client application with a one-time code. The client trades that code for a token, using a channel the user's browser does not have to see.
+
+The security of that dance sits in a few checks:
+
+- The **redirect URI** must be an exact, registered destination. If the attacker can choose where the code is sent, they receive the code.
+- The **state** (and, for newer flows, a nonce and PKCE) binds the browser that started the request to the browser that finishes it. Without that binding, a login can be forced onto the victim: login CSRF.
+- The **token** should be limited to the scope the user saw, sent only to the registered client, and not placed where referrer headers, logs, or browser history will collect it.
+- The client must not trust a token it did not obtain through the checks above. Accepting a token from the query string because "it looks logged in" skips the protocol.
+
+Open redirects on the client site are a frequent accomplice. The registered redirect is honest, and a second hop sends the code wherever the attacker asked.
+
+## What to look for
+
+In a lab's OAuth flow, map the requests in order: where the browser is sent, which parameters are on that redirect, where it returns, and which server-side request trades the code. You are looking for a redirect URI the lab lets you influence, a missing state, a code that appears in a place a third party can read, or a token accepted from the wrong channel.
+
+<Lab>
+
+Use Proxy history to capture one complete login. Label the authorization request, the redirect back, and the code exchange. In Repeater, do not improvise a new flow against a real provider. Stay in the lab. Compare the baseline redirect URI with a change the lab asks you to make, and write whether the authorization server accepted it.
+
+Note whether state is present and whether the client checks it. Note whether the code is in the query string of a page that loads third-party resources. Those are observations. A copied authorize URL with an attacker destination does not belong in this repo.
+
+</Lab>
+
+<Defend>
+
+Register exact redirect URIs. Require state, and use PKCE for public clients. Exchange the code on the server. Keep tokens out of URLs. Validate the token's audience and issuer, which is the JWT note if the token is a JWT. Ask for the smallest scope. Treat the identity provider as a third party whose outage and compromise are part of your design.
+
+</Defend>
+
+<Pitfall>
+
+Calling every "log in with" button OAuth. Ignoring the difference between a code and a token. Assuming a popular provider means the client implemented the checks. Forgetting login CSRF when state is missing. Testing redirect tricks against a production identity provider.
+
+</Pitfall>

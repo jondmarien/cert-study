@@ -1,0 +1,61 @@
+---
+title: Burp Logger
+family: Burp workflow
+order: 60
+status: ready
+minutes: 10
+summary: Logger is the session tape. Use it to reconstruct what every Burp tool sent, especially after a long lab.
+objectives:
+  - Explain how Logger differs from Proxy history
+  - Filter a session down to the requests that mattered
+  - Turn a noisy lab into a short written sequence
+related:
+  - track: security-plus
+    slug: monitoring
+  - track: bscp
+    slug: burp-proxy
+  - track: bscp
+    slug: burp-repeater
+tags:
+  - burp
+  - logger
+---
+
+## Core idea
+
+Proxy history shows what the browser sent through the proxy. Logger shows a wider tape: requests from Repeater, Intruder, and other tools, in the order Burp issued them. When a lab has lasted an hour, Logger is how you answer "what did I actually do?" without reconstructing it from memory.
+
+That makes it a note-taking tool. It is also a reminder that your project file is a log of identifiers, cookies, and anything the lab displayed. Filter it. Do not export it to a chat.
+
+## What to look for
+
+Use Logger when:
+
+- A multi-step flow is confusing and you need the order of requests
+- You cannot remember which Repeater change produced a different response
+- Intruder produced many responses and you want the ones that were not the baseline
+- You are about to write up the lab and you need a short sequence, not a thousand rows
+
+Filter by tool, by host in scope, or by a word you expect in the interesting response. The goal is a handful of rows you can describe.
+
+<Lab>
+
+After you finish a comparison in Repeater, open Logger and find those two sends. Confirm the baseline really was sent before the variant. Write the sequence in the notebook as ordinary sentences: which tool, what single change, what evidence moved.
+
+If the lab involved a server calling out, check Logger and the Collaborator tab together. Logger shows what you sent. Collaborator shows whether the server made a separate request. They answer different questions.
+
+Clear or isolate the project when the lab is over so the next lab does not inherit a misleading history.
+
+</Lab>
+
+<Defend>
+
+This is the tester's version of audit logging. A useful log answers who (which tool and which session), what (which request), when (order), and what the outcome was. Security+ treats logging as an operational control for the same reason: after an event, you need a record you can trust.
+
+</Defend>
+
+<Pitfall>
+
+Scrolling the unfiltered log and calling that analysis. Assuming Proxy history contains Repeater sends. Exporting the full log into a ticket. Mixing two labs in one project so the order lies to you.
+
+</Pitfall>

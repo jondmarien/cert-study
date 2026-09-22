@@ -1,0 +1,59 @@
+---
+title: Security controls
+family: General concepts
+order: 20
+status: ready
+minutes: 16
+summary: A control is a safeguard. The exam sorts them by what they do and by how they are built.
+objectives:
+  - Classify a control as preventive, detective, corrective, deterrent, compensating, or directive
+  - Classify the same control as technical, managerial, operational, or physical
+  - Pick a compensating control when the preferred one cannot be used
+related:
+  - track: security-plus
+    slug: mitigation-techniques
+  - track: security-plus
+    slug: general-security-concepts
+  - track: bscp
+    slug: access-control
+tags:
+  - controls
+---
+
+## Core idea
+
+A control is anything you put in place to change risk. The exam asks two independent questions about the same control, and mixing them up is the usual miss.
+
+**What it does:**
+
+| Type | Job | Everyday example |
+| --- | --- | --- |
+| Preventive | Stop the event | A lock, an allow-list, a parameterized query |
+| Detective | Notice the event | An alert, a camera, a log review |
+| Corrective | Repair after the event | Restoring a backup, patching after an incident |
+| Deterrent | Discourage an attempt | A warning banner, a visible camera |
+| Compensating | Fill in for a control you cannot use yet | Extra monitoring while a legacy app cannot take a patch |
+| Directive | Tell people the required behavior | A policy that says laptops must encrypt their disks |
+
+**How it is implemented:**
+
+| Category | Built from | Everyday example |
+| --- | --- | --- |
+| Technical | Software or hardware | Firewall rule, encryption, authentication system |
+| Managerial | Policy and governance | Risk assessments, hiring standards |
+| Operational | People doing the work | Training, log review procedures, incident drills |
+| Physical | The building and devices | Badge reader, fence, cable lock |
+
+A badge reader is physical and preventive. A camera is physical and detective. Security awareness training is operational and often directive or preventive, depending on whether the item stresses the policy or the behavior. Read the stem for which axis it is asking.
+
+<Exam>
+
+When the preferred control is missing, look for the word that means "until we can." That is compensating. When the answer is a sign or a policy with no enforcement mechanism, think deterrent or directive, not preventive. Preventive means it actually stops the action.
+
+</Exam>
+
+<Pitfall>
+
+Using "administrative" as a synonym you invented. The current outline's managerial and operational split is the one to learn. Calling every technical control preventive. Encryption can be preventive for confidentiality and still do nothing for availability. Forgetting that one control can be described on both axes, so the stem decides.
+
+</Pitfall>

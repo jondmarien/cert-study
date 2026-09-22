@@ -1,0 +1,65 @@
+---
+title: Cross-site scripting
+family: Server-side
+order: 120
+status: ready
+minutes: 18
+summary: XSS is attacker-controlled content executing in a victim's browser because a page mixed data into a markup or script context.
+objectives:
+  - Separate reflected, stored, and DOM-based delivery
+  - Explain why the output context decides the defense
+  - Trace a reflection in Repeater without turning notes into a script
+academy: Cross-site scripting
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: security-plus
+    slug: mitigation-techniques
+  - track: bscp
+    slug: dom-based-issues
+  - track: bscp
+    slug: content-security-policy
+tags:
+  - xss
+  - client
+---
+
+## Core idea
+
+The browser has powerful contexts: HTML, attributes, URLs, and JavaScript. Cross-site scripting is what happens when a string an attacker supplied is placed into one of those contexts and the browser treats it as instructions. The victim's browser runs it, so it runs with the victim's session and origin.
+
+Delivery has three common shapes. **Reflected** means the response to this request echoes the input. **Stored** means the input is saved and echoed later, to whoever views that page. **DOM-based** means the server response may not contain the input at all. Client-side script copies it from a source, often the URL, into a sink that interprets it. DOM-based issues have their own note, because the evidence is in the browser's data flow.
+
+The context decides both the bug and the fix. Encoding that is correct for HTML text is wrong inside a JavaScript string. A single "escape function" applied everywhere is how these bugs survive code review.
+
+## What to look for
+
+- Input that comes back in the body. Note where: text, attribute, URL, or inline script.
+- The same input saved and shown on a different page or to a different user.
+- A transformation the server applied (encoding, stripping a word) and whether the output context still interprets what remains.
+- A client script that reads location data and writes to the document. That is the DOM-based trail.
+- Defensive headers already present, especially a Content Security Policy, and whether the page also uses inline script. The CSP note covers how to read that header. Presence of a policy is not the same as a policy that matches the page.
+
+<Lab>
+
+Use Repeater to see the raw response. Send a harmless marker string you will recognize, not a script. Find that marker in the response and write down the context around it: what kind of markup or code it sits inside.
+
+If the lab is stored XSS, send the marker through the form that saves it, then request the page that displays it, still in Repeater or in Proxy history. The bug is in the display, even though the input arrived earlier.
+
+For the exploitability question, follow the Academy lab's own steps inside the lab. In your notebook, record the context and the encoding that was missing. Do not save a working script in this repo.
+
+When the reflection is only in the browser, the DOM note and the browser's own tools matter more than the server response. Say which one you used.
+
+</Lab>
+
+<Defend>
+
+Encode for the context at the moment you write into it. Prefer a template engine that escapes by default, and mark the rare intentional raw HTML as a review point. Avoid inserting untrusted data into JavaScript contexts. A Content Security Policy with nonces or hashes is a second layer that limits what an injected script can do. `HttpOnly` on the session cookie means script cannot read that cookie. The request the browser sends may still include it, so XSS remains a session problem.
+
+</Defend>
+
+<Pitfall>
+
+Calling every reflection XSS without naming the context. Testing only the response that accepted the input, and missing the page that stores it. Assuming a filter that removes one tag is a fix. Ignoring DOM-based flows because Repeater shows no reflection. Copying a lab script into your notes.
+
+</Pitfall>

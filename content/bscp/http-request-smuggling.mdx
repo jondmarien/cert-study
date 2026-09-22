@@ -1,0 +1,60 @@
+---
+title: HTTP request smuggling
+family: Server-side
+order: 210
+status: ready
+minutes: 15
+summary: Request smuggling is a disagreement between two HTTP parsers about where a request ends, so one party's bytes become the next party's request.
+objectives:
+  - Explain a front-end and back-end parsing the same byte stream
+  - Name Content-Length and Transfer-Encoding as the fields parsers can disagree on
+  - Treat this topic as lab-only because the blast radius is other people's requests
+academy: HTTP request smuggling
+related:
+  - track: security-plus
+    slug: enterprise-infrastructure
+  - track: bscp
+    slug: reading-a-web-app
+tags:
+  - smuggling
+  - http
+---
+
+## Core idea
+
+Modern applications often have two HTTP speakers in a row: a front-end proxy and a back-end server. They share a connection and they both decide where one request stops and the next begins. Request smuggling is when they disagree. Bytes the front end thought were the body of request A are what the back end thinks is the start of request B.
+
+The classic disagreement is between `Content-Length` and `Transfer-Encoding`. One component trusts one way of measuring the body. The other trusts the other way, or interprets an ambiguous encoding header differently. Names you will see in Academy material, CL.TE and TE.CL, are just "which component used which rule." You do not need a raw request in your notes to remember the idea.
+
+The impact is serious because the leftover bytes can be interpreted as someone else's request on a shared connection: a poisoned next request, a bypass of a front-end control, or a response that belongs to another user. That is why this topic is a poor place to experiment. A lab built for it is the only appropriate target. On a shared host you would be tampering with other people's traffic.
+
+## What to look for
+
+Conceptually, not as a checklist to run at random:
+
+- A front end and a back end, or any reverse proxy in front of an origin
+- Requests where both length headers are present, or where the encoding header is obfuscated enough that two parsers might normalize it differently
+- Front-end controls (access rules, request filters) that the back end does not repeat
+- Odd response timing: you received a response that matches a request you did not intend to send, or a request seems to have been answered out of order
+
+If you cannot draw the two parsers and say which header each one believed, you do not yet have the concept.
+
+<Lab>
+
+Use only the Academy lab for this topic. Read the lab's description of which component honors which header before you send anything. In Repeater, your job is to observe the disagreement the lab constructed, then describe it in sentences: who measured the body with which rule, and which bytes the back end treated as a new request.
+
+Do not aim this technique at any host that shares a connection pool with other users. Do not keep a working smuggling request in this repo. The note is done when you can teach the disagreement with a diagram of two boxes and one stream.
+
+</Lab>
+
+<Defend>
+
+Use one HTTP implementation's rules end to end where you can. Reject ambiguous requests: both length headers, duplicated encoding headers, and encodings you do not intend to support. Normalize at the edge and then pass a rewritten request that has a single, clear length. Keep access-control decisions on the component that actually serves the resource, so a confused front end cannot be the only gate.
+
+</Defend>
+
+<Pitfall>
+
+Treating smuggling as "just another header injection" and trying it outside a lab. Memorizing a request template you do not understand. Forgetting that HTTP/2 changes the framing conversation and that downgrades between versions reintroduce the ambiguity. Skipping the topic because the requests look scary, and then being unable to explain the two-parser idea on exam day.
+
+</Pitfall>

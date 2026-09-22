@@ -1,0 +1,46 @@
+---
+title: Threat actors
+family: Threats and mitigations
+order: 70
+status: ready
+minutes: 14
+summary: Actors differ by skill, funding, access, and motive. The exam wants the best-fitting label, not a true-crime story.
+objectives:
+  - Contrast nation-state, organized crime, insider, hacktivist, and shadow IT
+  - Separate motive from capability
+  - Treat an untrained insider and a malicious insider as different problems
+related:
+  - track: security-plus
+    slug: threat-vectors
+  - track: security-plus
+    slug: threats-vulnerabilities-mitigations
+  - track: bscp
+    slug: scope-and-ethics
+tags:
+  - actors
+---
+
+## Core idea
+
+Label an actor with two questions: why are they doing it, and what resources do they have?
+
+- **Nation-state or advanced persistent** actors are resourced, patient, and usually after intelligence, disruption, or long-term access. The clue in a stem is sophistication plus a political or strategic goal, not "they used malware."
+- **Organized crime** wants money. Ransomware, fraud, and stolen data that can be sold are the usual stories. They can be skilled. The motive is the difference from a spy service.
+- **Hacktivists** want attention for a cause. Defacement and leaks aimed at embarrassment fit better than quiet theft.
+- **Insiders** already have some access. **Malicious** insiders intend harm or theft. **Careless** insiders cause incidents without that intent. The control mix differs: monitoring and least privilege for both, plus hiring and offboarding emphasis for the malicious case, plus usability and training for the careless case.
+- **Shadow IT** is systems the business adopted without the security program. The "actor" is often an employee solving a problem. The risk is unknown data flow, not a criminal plan.
+- **Competitors** and **script-level opportunists** show up as distractors. Unskilled actors using other people's tools still matter because the tools are widely available. Do not inflate them into a nation-state because the outage was expensive.
+
+Attributes the outline cares about: internal versus external, intent, resources, sophistication, and whether they have a relationship with you (vendor, partner, employee).
+
+<Exam>
+
+Pick the most specific actor the story supports. "A government seeking intellectual property over many months" is not organized crime just because money is also nice to have. "An employee copied the customer list on the last day" is an insider, not a hacktivist. If the story does not support motive, do not invent one. Answer with the attribute they actually gave you.
+
+</Exam>
+
+<Pitfall>
+
+Using "hacker" as an exam answer. It is not a precise actor. Assuming external is always worse than internal. Insiders start past several controls. Treating shadow IT as a type of malware. It is a governance and inventory problem.
+
+</Pitfall>

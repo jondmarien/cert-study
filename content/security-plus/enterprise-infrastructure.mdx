@@ -1,0 +1,48 @@
+---
+title: Enterprise infrastructure
+family: Architecture
+order: 130
+status: ready
+minutes: 16
+summary: Place the control where the decision should happen. Know the difference between a boundary, a directory, and a tunnel.
+objectives:
+  - Contrast firewall, IDS, and IPS at the level of action
+  - Explain segmentation, jump hosts, and remote access as design choices
+  - Tie web trust boundaries back to this picture
+related:
+  - track: bscp
+    slug: http-request-smuggling
+  - track: bscp
+    slug: ssrf
+  - track: security-plus
+    slug: zero-trust
+tags:
+  - network
+  - infrastructure
+---
+
+## Core idea
+
+Infrastructure questions ask where a decision sits.
+
+- A **firewall** enforces which traffic may pass, based on rules. It is preventive. A layer-4 rule sees addresses and ports. An application-aware rule sees more of the protocol and still is not a reason to skip authorization inside the app.
+- An **IDS** detects and alerts. An **IPS** can block. If the stem says the exploit still reached the host and someone was notified, that is detection. If it says the connection was dropped, something preventive acted. Sensors can be wrong. A block is not free.
+- **Segmentation** puts systems that do not need to talk on separate networks, with rules between them. VLANs are a common mechanism. They are not a security model by themselves if every VLAN can route to every other.
+- A **jump host** or bastion is a single administrative path. Admins sign in there, and only there can reach the sensitive systems. The point is a narrow, logged door.
+- **Remote access** (VPN or a zero-trust access broker) brings a person or a device onto a defined set of applications. A VPN that drops the user onto the whole internal network is the design zero trust is reacting to.
+- **DNS** is both a dependency and a detection point. Poisoned or hijacked name resolution sends people to the wrong host. Logs of lookups are a detective control. Do not invent a filtering procedure here. Know that name resolution is security-relevant.
+- **Proxies** in the enterprise sense are policy points for outbound or inbound traffic. Burp's proxy is a tester's local tool. They share a shape (a process in the middle) and not a job. Do not answer an enterprise stem with a lab tool.
+
+Load balancers and reverse proxies are also where HTTP parsing can disagree with the origin. That is the conceptual link to request smuggling. The architecture lesson is: two parsers in a row need one clear rule for a request.
+
+<Exam>
+
+"Alert only" is IDS or a SIEM, depending on whether they mean the sensor or the place alerts are correlated. "Drop the packet" is a preventive control such as a firewall or IPS. "Only the finance servers can reach the database" is segmentation plus least privilege. "Admins must pass through one logged host" is a jump host. If the stem is about a server fetching a user-supplied URL, the infrastructure issue is egress from that server, which is the SSRF story.
+
+</Exam>
+
+<Pitfall>
+
+Calling every middlebox a firewall. Forgetting IDS does not stop traffic by itself. Treating a VLAN as encryption. Answering with Burp features on an enterprise architecture item. Ignoring that a reverse proxy and the application can disagree about request boundaries.
+
+</Pitfall>

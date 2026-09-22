@@ -1,0 +1,65 @@
+---
+title: Access control and IDOR
+family: Server-side
+order: 100
+status: ready
+minutes: 18
+summary: Access control fails when the server uses an identifier the client sent and does not check it against the caller.
+objectives:
+  - Separate authentication from authorization
+  - Describe horizontal and vertical access gaps
+  - Test with two lab identities and one change at a time
+academy: Access control
+related:
+  - track: security-plus
+    slug: identity-and-access
+  - track: security-plus
+    slug: zero-trust
+  - track: bscp
+    slug: sessions-and-cookies
+tags:
+  - access-control
+  - idor
+---
+
+## Core idea
+
+Authentication answers "who is this session?" Authorization answers "what may this session do?" IDOR, insecure direct object reference, is the common case where an identifier in the request picks a record, and the server fetches that record without asking whether this caller may see it.
+
+Horizontal access is between peers: one customer and another customer's invoice. Vertical access is between ranks: a user and an administrator function. Both are missing checks. Hiding a button is not a check. The browser is not the place the decision is allowed to live.
+
+## What to look for
+
+From the map, list every value that selects an object or an action:
+
+- Identifiers in the path, the query, or the body
+- A role name or a flag the client sends
+- An administrative path you only noticed in a script or a comment
+- A method change, such as a read request that has a sibling update
+- A multi-step flow where step one checks the user and step two trusts a previously issued identifier
+
+The evidence you want is a difference in whose data came back, or whether a privileged action succeeded, while your session stayed the same. If both the session and the identifier change, you have learned nothing.
+
+<Lab>
+
+Use two lab accounts when the lab provides them. With account A, perform the action normally and keep that request in Repeater. Note the identifier and a non-secret marker of the record (a label the lab shows you).
+
+Then swap only the identifier for one that belongs to account B, still using A's session. Compare status, length, and whether B's marker appears. As a second experiment, keep A's identifier and remove or swap the session, so you know the data is not simply public.
+
+For a vertical question, repeat a high-privilege request from history with a low-privilege session, changing nothing else. A hidden link that still answers is a missing server-side check.
+
+Record the comparison. Do not build a list of real identifiers from anywhere except the lab.
+
+</Lab>
+
+<Defend>
+
+Every object access checks the caller's identity against an allow rule on the server. Identifiers can stay visible. Unpredictable identifiers make guessing harder and do not replace the check. Administrative actions need their own rule, not a hidden URL. Frameworks often have a place to declare this per route. The bug is usually a route that skipped it.
+
+</Defend>
+
+<Pitfall>
+
+Testing while logged out and calling a public page an access-control pass. Changing the identifier and the cookie in one edit. Concluding the app is safe because identifiers are long. Trusting the UI: if the button is missing, the request may still exist in history from another role. Forgetting that a list endpoint and a detail endpoint can enforce different rules.
+
+</Pitfall>

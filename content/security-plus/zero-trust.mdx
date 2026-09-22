@@ -1,0 +1,48 @@
+---
+title: Zero trust
+family: General concepts
+order: 40
+status: ready
+minutes: 13
+summary: Zero trust means every request is authenticated and authorized in context. The network location is not a proof.
+objectives:
+  - Contrast a trusted internal network with per-request checks
+  - Name the assumptions zero trust refuses
+  - Relate the idea to access control on a web application
+related:
+  - track: bscp
+    slug: access-control
+  - track: security-plus
+    slug: identity-and-access
+  - track: security-plus
+    slug: enterprise-infrastructure
+tags:
+  - zero-trust
+---
+
+## Core idea
+
+Older designs trusted a request because it came from "inside." A VPN login or a desk on the corporate LAN was treated as enough. Zero trust drops that assumption. Every request is treated as if it came from an open network. The caller proves identity. The device may have to prove its health. The target authorizes that specific action. The grant is as small and as short-lived as the work allows.
+
+The phrase people repeat is "never trust, always verify." The useful version is more concrete. Trust is not a zone on a diagram. Trust is a decision you recompute.
+
+What the model refuses:
+
+- A flat internal network where any host may talk to any host
+- Long-lived broad privileges
+- Implicit trust in a vendor box just because it sits in the data center
+- A single check at the door and no check at the resource
+
+What it still needs, or it is only a slogan: a strong identity, a policy decision close to the resource, visibility into the request, and a way to limit blast radius when the identity is wrong. Segmentation and least privilege are the older terms that do the same work. Zero trust is those terms applied even to traffic you used to call internal.
+
+<Exam>
+
+If the stem contrasts "VPN and then full access" with "each application checks the user and the device," the second one is the zero-trust answer. If the stem only says "firewall between us and the internet," that is a perimeter, not zero trust. Microsegmentation is often the network-shaped answer sitting next to the identity-shaped one. Read whether they asked about packets or about users.
+
+</Exam>
+
+<Pitfall>
+
+Buying a product named zero trust and keeping broad admin roles. Assuming zero trust means there are no firewalls. It means firewalls are not the only decision. Confusing it with "trust no employee." The model verifies. It does not imply the workforce is hostile. Forgetting device posture. A verified user on a compromised laptop is still a problem the model is supposed to shrink.
+
+</Pitfall>

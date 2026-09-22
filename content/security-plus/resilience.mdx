@@ -1,0 +1,57 @@
+---
+title: Resilience and recovery
+family: Architecture
+order: 150
+status: ready
+minutes: 15
+summary: Resilience is surviving failure. Learn RTO, RPO, sites, and backups as design numbers, not as a restore tutorial.
+objectives:
+  - Define RTO and RPO in one sentence each
+  - Contrast hot, warm, and cold sites
+  - Explain why a backup that was never tested is a hope
+related:
+  - track: security-plus
+    slug: incident-response
+  - track: security-plus
+    slug: security-architecture
+  - track: bscp
+    slug: race-conditions
+tags:
+  - resilience
+  - backups
+---
+
+## Core idea
+
+**Availability** is the goal. **Resilience** is the design that keeps the goal when something breaks. **Recovery** is what you do to return to a defined state.
+
+Two numbers show up constantly:
+
+- **RTO, recovery time objective.** How long you can be down. It is a time budget for restoration.
+- **RPO, recovery point objective.** How much data you can afford to lose, measured as time. A nightly backup means you might lose a day of changes. That is an RPO conversation.
+
+RTO is about the clock on the wall during the outage. RPO is about the age of the data you return to. A stem that says "we cannot lose more than 15 minutes of transactions" is RPO. A stem that says "we must be back within an hour" is RTO.
+
+**Sites:**
+
+| Site | What is already there | What it costs you in time |
+| --- | --- | --- |
+| Hot | Nearly ready to run | Little delay, high cost |
+| Warm | Equipment, not fully current data or config | A middle delay |
+| Cold | Space and power, little else | A long delay, lower cost |
+
+**Backups** need a scope (what), a frequency (which sets a floor on RPO), an offsite or offline copy (so one event does not eat the only copy), and a restore test (so you know the backup is real). Immutability or offline copies matter when the threat encrypts or deletes whatever it can reach, including the backup server.
+
+High availability (extra nodes, load balancing) reduces the chance of downtime. It is not a backup. Two nodes that both replicate a bad change still have the bad change. You wanted a point in time you could return to.
+
+<Exam>
+
+Sort the stem into RTO, RPO, site type, or backup property. "We failed over in minutes to a running replica" is hot or high availability, and you still ask whether it protects against data destruction. "The tapes are in the same rack as the server" fails the separation test. Do not answer a backup question with an incident-response phase unless they asked what the team does tonight. The design belongs here. The checklist belongs in operations.
+
+</Exam>
+
+<Pitfall>
+
+Swapping RTO and RPO. Calling replication a backup. Assuming a hot site is current if nobody rehearses the failover. Ignoring that resilience includes people and vendors, not only disks. A runbook nobody has practiced is a cold process wearing a hot-site badge.
+
+</Pitfall>

@@ -1,0 +1,50 @@
+---
+title: Data protection
+family: Architecture
+order: 140
+status: ready
+minutes: 14
+summary: Protect data by knowing what it is, where it is, and which state it is in. Classification comes before the product.
+objectives:
+  - Order classification before encryption and DLP
+  - Apply in transit, at rest, and in use to a scenario
+  - Separate privacy obligations from confidentiality as a security goal
+related:
+  - track: bscp
+    slug: information-disclosure
+  - track: security-plus
+    slug: cryptography-basics
+  - track: security-plus
+    slug: governance-and-compliance
+tags:
+  - data
+  - privacy
+---
+
+## Core idea
+
+You cannot pick a control for data you have not labeled. **Classification** is the label: public, internal, confidential, or whatever scheme the organization actually uses. The label drives handling: who may open it, whether it may sit in a personal drive, how long it is kept, and whether it must be encrypted.
+
+**Data loss prevention** tools watch for those labels, or for patterns, on endpoints, networks, and mail. They are detective and sometimes preventive. They fail when the data was never classified or when people route around them. They are not a substitute for access control.
+
+States, again, because this domain asks about location:
+
+- **In transit.** Protect the channel. TLS is the usual answer for application traffic.
+- **At rest.** Protect the stored object. Disk or database encryption. Keys are not stored next to the ciphertext in the same easy place.
+- **In use.** The application has decrypted it. Ordinary encryption does not cover this state. The controls are access control, memory-hardening choices the vendor made, and minimizing how much you decrypt.
+
+**Privacy** is the obligation about personal data: purpose, minimization, retention, and the rights a law gives the person. Confidentiality is the security goal of keeping data from the wrong party. A system can be confidential and still be a privacy failure if you collected more than you needed or kept it forever. Governance owns the policy. Architecture owns the mechanisms that make the policy true.
+
+Retention and destruction are part of protection. Data kept past its purpose is extra impact. Destruction has to match the media. A file delete is not a story you tell about a decommissioned disk unless the stem says the method was actually sufficient.
+
+<Exam>
+
+If they ask what you do first with a pile of unclassified files, the answer is classification or discovery, not "buy DLP." If they say the laptop was stolen and the disk was encrypted, confidentiality holds better than if it was not. Availability still depends on the backup. If they mention a regulation about personal data, look for the privacy or governance answer, not a cipher suite.
+
+</Exam>
+
+<Pitfall>
+
+Encrypting everything and skipping classification, so nobody knows the handling rules. Calling a backup an encryption strategy. Treating privacy and confidentiality as the same word. Forgetting in-use data when the stem says the attacker was already on the application server.
+
+</Pitfall>

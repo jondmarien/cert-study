@@ -1,0 +1,61 @@
+---
+title: Cross-site request forgery
+family: Server-side
+order: 130
+status: ready
+minutes: 14
+summary: CSRF is a state-changing request the browser will send with the victim's cookies, started from another site, with no secret the attacker cannot see.
+objectives:
+  - Explain why the browser attaches cookies to cross-site requests
+  - Identify which requests are worth a CSRF check
+  - Compare token, SameSite, and method choices as defenses
+academy: Cross-site request forgery (CSRF)
+related:
+  - track: security-plus
+    slug: mitigation-techniques
+  - track: bscp
+    slug: sessions-and-cookies
+  - track: bscp
+    slug: cors
+tags:
+  - csrf
+  - session
+---
+
+## Core idea
+
+The browser will attach a cookie to a request toward the cookie's site even when another site started the navigation or the form submit. If the application treats that cookie as proof that the user meant to perform an action, a page elsewhere can ask the browser to perform it. That is cross-site request forgery.
+
+The attacker does not need to read the cookie. They need a request whose meaning is fully determined by values they can choose, plus the cookie the browser will add. A secret that changes per session, which the attacker cannot read, breaks that. So does a browser policy that refuses to attach the cookie on cross-site requests.
+
+## What to look for
+
+Not every request is a CSRF issue. Look for:
+
+- A request that changes state: password, email, transfer, role, or a stored setting
+- Authentication by a cookie the browser attaches automatically
+- No second secret, or a secret that is predictable, missing, or not tied to the session
+- A method the browser can trigger from another origin without a special permission. Historically that included simple form posts. `SameSite` has changed the default, so you still verify the cookie's actual attribute and the application's token behavior rather than assuming the browser saved you
+- Token checks that only happen for some methods, or that compare a value the attacker can supply twice
+
+Reading a page is usually not CSRF. If the response contains sensitive data and another origin can read it, you have crossed into a different question, often CORS.
+
+<Lab>
+
+In Repeater, find a state-changing request and identify anything that looks like a CSRF token: a body field or a header that is not the session cookie. Send a baseline with the token. Then send the same request with the token removed, and once with a token from a different lab session if the lab gives you one. The comparison you want is whether the action still happens.
+
+Also note the session cookie's `SameSite` attribute from the login response. Write down whether the lab's defense is the token, the cookie attribute, or both. Do not build a page that submits the request. The Academy lab hosts that exercise when it wants you to see the browser's behavior.
+
+</Lab>
+
+<Defend>
+
+Require a per-session secret on state-changing requests and check it on the server. Set `SameSite` deliberately. Do not use a GET request to change state, because browsers and people follow links. Check the origin or referrer as a backstop where it fits the application. A framework's built-in CSRF middleware, actually enabled on the routes that change state, is the usual fix.
+
+</Defend>
+
+<Pitfall>
+
+Calling every form a CSRF bug. Forgetting that a token echoed in a cookie and also accepted from the request body may be forgeable if the attacker can set cookies. Assuming `SameSite` is present because modern browsers have a default. Testing only the happy path with the token still attached. Confusing CSRF (browser sends your cookie) with XSS (script runs as you).
+
+</Pitfall>

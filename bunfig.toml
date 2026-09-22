@@ -1,0 +1,4 @@
+[install]
+# This repo commits Bun's binary lockfile (bun.lockb), which current Bun
+# writes only when the text lockfile is turned off.
+saveTextLockfile = false

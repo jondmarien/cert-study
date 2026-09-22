@@ -1,0 +1,53 @@
+---
+title: Incident response
+family: Operations
+order: 200
+status: ready
+minutes: 15
+summary: Incident response is an ordered process. Containment beats curiosity, and evidence has a chain of custody.
+objectives:
+  - Order preparation, detection, containment, eradication, recovery, and lessons
+  - Distinguish containment from eradication
+  - State why notes and custody matter without writing a forensics how-to
+related:
+  - track: security-plus
+    slug: monitoring
+  - track: security-plus
+    slug: resilience
+  - track: security-plus
+    slug: indicators-of-activity
+tags:
+  - incident
+  - response
+---
+
+## Core idea
+
+An incident is an event the organization has decided to handle through the response plan. The plan exists before the event. That is **preparation**: roles, contacts, severity definitions, and the legal line about when you call someone outside the team.
+
+A commonly taught sequence, which you should be able to say in order, is:
+
+1. **Preparation.**
+2. **Detection and analysis.** Confirm you have an incident and how bad it is. Indicators feed this step.
+3. **Containment.** Stop it getting worse. Short-term containment is the urgent isolation. Long-term containment is a safer steady state while you work.
+4. **Eradication.** Remove the cause: the account, the malware family, the vulnerable configuration. Do this after you have the evidence you were told to keep, or you will destroy the timeline.
+5. **Recovery.** Return to service carefully, watching for the same indicator.
+6. **Lessons learned.** Change the control or the plan. A review that produces no change is a meeting.
+
+Containment and eradication are the pair people swap. Unplugging a host is containment. Rebuilding it is eradication and recovery. Scanning the rest of the estate during containment is normal. Reimaging before anyone captures what the plan required is how you fail the process.
+
+**Evidence** has to be preservable. Chain of custody means you can say who held it, when, and what they did. You do not need imaging commands for this exam. You need the idea that casual poking changes the thing you might have to explain later. Only people assigned by the plan should touch a suspected system.
+
+Communication is part of the process: who is allowed to say what, to customers, to regulators, and to staff. That crosses into governance.
+
+<Exam>
+
+"First" in an active incident is rarely "patch all servers" or "write the lessons-learned slide." It is usually identify or contain, depending on whether they already know it is real. If the stem says the business is still losing data, containment outranks a deeper analysis. If the stem says the systems are back and the same alert returned, recovery was incomplete or eradication was skipped.
+
+</Exam>
+
+<Pitfall>
+
+Rebooting as a reflex. Treating every alert as an incident, or treating a confirmed incident as a research project. Skipping lessons learned. Confusing disaster recovery (a resilience plan for a disruption) with incident response (a security process). They meet in recovery and they are not the same document. Publishing indicators from a live case in a study note.
+
+</Pitfall>

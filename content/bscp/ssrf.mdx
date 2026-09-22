@@ -1,0 +1,62 @@
+---
+title: Server-side request forgery
+family: Server-side
+order: 140
+status: ready
+minutes: 16
+summary: SSRF is the server fetching a location a user influenced, so the request comes from inside a trust boundary the user does not occupy.
+objectives:
+  - Recognize features that turn a user string into a server-side fetch
+  - Explain why the server's network position is the impact
+  - Use Collaborator only when the response hides the fetch
+academy: Server-side request forgery (SSRF)
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: security-plus
+    slug: threat-vectors
+  - track: bscp
+    slug: burp-collaborator
+tags:
+  - ssrf
+---
+
+## Core idea
+
+Users hand applications URLs all the time: "import this image," "preview this link," "webhook this endpoint," "fetch this PDF." Server-side request forgery is the case where the server performs that fetch and an attacker chooses the destination. The request then comes from the server's network position, which often can see internal services the attacker cannot route to directly.
+
+Impact depends on that position. A server that can only reach the public internet is a different problem from a server that can reach cloud metadata services, internal admin ports, or other tenants. You describe the position. You do not need a catalog of internal addresses to understand the bug.
+
+Some SSRF is visible: the response contains what was fetched, or an error names the target. Some is blind: the response looks normal, and the evidence is that a lookup happened. Collaborator exists for the blind case.
+
+## What to look for
+
+- Any feature whose input is a URL, a hostname, or a file path that might be remote
+- Server-side renderers and importers
+- Errors that mention a connection, a refused port, or a hostname you influenced
+- A baseline URL the lab expects, so you know the feature really does fetch
+- Defenses that are only string filters ("block this substring") rather than a parsed allow list. Filters that look at the text of the URL get confused by how URLs are actually parsed. The durable check happens after parsing, against an allow list of destinations
+
+<Lab>
+
+Confirm the feature with the lab's intended URL first. Record the response. That is the baseline.
+
+If the response shows the fetch result or a clear error, keep the work in Repeater and compare destinations the lab tells you are relevant. Describe them by role ("the lab's internal service," "a host the lab says is blocked") rather than turning your notes into a scan list.
+
+If the response hides the result, use Collaborator as described in that note: one hostname, one field, poll, and write down whether an interaction arrived. Make sure the interaction is from the server and not from your browser.
+
+Stay inside the lab's hosts. Do not point a lab feature at an organization you are not allowed to test.
+
+</Lab>
+
+<Defend>
+
+Do not fetch arbitrary user-supplied locations. If the feature must fetch, allow-list the destination after parsing the URL, block link-local and metadata networks, and disable redirects unless you re-check the new destination. Remove unused importers. Network policy should assume the application will be wrong once: the server's egress should not include the places an attacker would want.
+
+</Defend>
+
+<Pitfall>
+
+Calling every URL parameter SSRF without showing the server made the request. Scanning internal addresses outside the lab. Treating a text filter as a completed defense. Confusing a browser-side load (the user's browser fetched it) with a server-side fetch. Forgetting redirects, where the first destination is allowed and the second is not.
+
+</Pitfall>

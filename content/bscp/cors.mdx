@@ -1,0 +1,59 @@
+---
+title: CORS
+family: Client-side
+order: 270
+status: ready
+minutes: 14
+summary: CORS is the browser's rule for when a script on one origin may read a response from another. It is not a server-side firewall.
+objectives:
+  - Define an origin and what the same-origin policy already blocks
+  - Explain why a reflected origin plus credentials is the dangerous combination
+  - Separate "the browser sent the request" from "the script could read the response"
+academy: CORS
+related:
+  - track: security-plus
+    slug: mitigation-techniques
+  - track: bscp
+    slug: csrf
+  - track: bscp
+    slug: cross-site-scripting
+tags:
+  - cors
+  - browser
+---
+
+## Core idea
+
+The same-origin policy stops a script on one site from reading the responses of another site. Cross-origin resource sharing is the opt-out. The server sends headers that tell the browser "this other origin may read this response." If those headers are wrong, a script on an attacker's site can read authenticated data. The browser was trying to help. The server gave it bad instructions.
+
+CORS does not decide whether the request is sent. In many cases the browser sends the request anyway. CORS decides whether the calling script is allowed to see the response. That is the difference from CSRF. CSRF is about an action that happens because the request was sent with cookies. CORS is about a read of the response by foreign script.
+
+The header pattern that matters conceptually: if the server copies the caller's origin into the allow-origin header, and also allows credentials, then any site can read credentialed responses. A wildcard origin is incompatible with credentials in real browsers, so the reflected-origin bug is the one people misconfigure when they want credentials and also want to be flexible.
+
+## What to look for
+
+- `Access-Control-Allow-Origin` echoing whatever `Origin` the request sent
+- `Access-Control-Allow-Credentials` alongside that reflection
+- A list of allowed origins implemented as "contains this string" rather than an exact match
+- An API that returns sensitive JSON and relies on the same-origin policy alone, with the CORS headers added later by a gateway that reflects origins
+- Preflight responses (the browser's permission check for some methods) that are looser than the actual response
+
+<Lab>
+
+In Repeater, send the lab's API request with an `Origin` header set to a lab-approved foreign origin, and once with the lab's own origin if it has one. Compare the CORS response headers. Write down whether the foreign origin was reflected and whether credentials are allowed.
+
+You do not need to host a page to see the header mistake. The header is the bug. The Academy lab can show the browser enforcing it. Do not point a credentialed request at a real API from a site you control.
+
+</Lab>
+
+<Defend>
+
+Allow-list exact origins. Reflect one of them only if it is on the list. Allow credentials only when a specific origin was chosen, never with a wildcard. Do not use CORS as a substitute for authorization. The API still has to check the session and the object. Avoid putting secrets in responses that any allowed origin's script can read, unless that origin is as trusted as you are.
+
+</Defend>
+
+<Pitfall>
+
+Thinking CORS headers stop attacks the way a firewall would. The absence of CORS headers is the restrictive default. Confusing CSRF and CORS in an exam answer. Assuming a wildcard plus cookies works, or assuming it fails, without looking at the actual headers. Testing this by loading a real bank in a page you host.
+
+</Pitfall>

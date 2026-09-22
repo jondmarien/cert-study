@@ -1,0 +1,58 @@
+---
+title: Server-side template injection
+family: Server-side
+order: 190
+status: ready
+minutes: 13
+summary: SSTI happens when user input is built into a template that the server executes, so the input is code in that template language.
+objectives:
+  - Separate template data from template source
+  - Recognize preview and notification features that concatenate templates
+  - Explain the fix as passing data into a fixed template
+academy: Server-side template injection
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: cross-site-scripting
+tags:
+  - ssti
+  - injection
+---
+
+## Core idea
+
+A template engine turns a template plus data into output. The template is a program, even when it looks like HTML with holes in it. Server-side template injection happens when a user's string is inserted into the template source, not into a data hole. The engine then evaluates the user's text as template syntax, on the server, with whatever power that engine has.
+
+That is different from reflected XSS. XSS is the browser interpreting something. SSTI is the server interpreting something, before or instead of the browser. The impact is often the server's own privileges. The mental model is still injection: data was allowed to become structure.
+
+Engines differ. Some only print values. Some can reach objects and files. You do not need those differences to recognize the bug. You need to notice that the template text itself is being built from a request.
+
+## What to look for
+
+- Email, PDF, or page previews that include a user-controlled fragment of the template
+- Error messages that name a template engine when input contains syntax-like characters
+- A response that evaluates an expression rather than echoing it as text
+- A feature described as "customizable content" where customization is implemented as string concatenation into a template file
+
+The safe design is boring: the template is a fixed file in the repository, and the user value arrives as a parameter the engine will escape.
+
+<Lab>
+
+Baseline the preview or message feature with ordinary text. If the lab is teaching this topic, follow its comparison: does the server treat the input as text to escape, or as template source to run? Record the evidence in words (an expression result appeared, or a template error named the engine).
+
+Do not write the engine's expression syntax into this repo. Different engines use different delimiters, and a cheat sheet here would be a payload list. Your note should say which feature concatenated a template, and that the fix is a fixed template plus data.
+
+</Lab>
+
+<Defend>
+
+Keep templates in trusted files. Pass user input only as data. Use the engine's escaping for the output context. Sandbox the engine if the product truly lets customers edit templates, and treat that sandbox as a high-risk component with its own review. Do not `eval` a string to "make the template flexible."
+
+</Defend>
+
+<Pitfall>
+
+Calling it XSS because the result showed up in HTML. Stopping at the first engine you recognize and ignoring the concatenation. Assuming a sandbox is the same as not using user input as source. Collecting expression syntax in a personal payload file and pasting it at every text field.
+
+</Pitfall>

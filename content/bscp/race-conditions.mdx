@@ -1,0 +1,32 @@
+---
+title: Race conditions
+family: Server-side
+order: 1020
+status: outline
+minutes: 8
+summary: Outline only. A race is two requests that both pass a check before either update lands.
+objectives:
+  - Describe a check-then-act gap in one sentence
+  - Note the lab evidence to record once the write-up exists
+related:
+  - track: bscp
+    slug: business-logic
+  - track: security-plus
+    slug: resilience
+tags:
+  - outline
+  - race
+academy: Race conditions
+---
+
+## TODO
+
+Finished notes should stay conceptual. No timing scripts.
+
+## Checklist
+
+- The gap is check-then-act: the application reads a balance, a coupon, or a single-use token, then writes, and a second request does the same before the write is visible.
+- Evidence in a lab is two responses that both claim success, followed by a state that should have allowed only one.
+- Burp's Repeater can send a group of requests in parallel in current versions. The note should say when parallel sends are the right observation, and that this is lab-only.
+- Defenders use a transaction or a single-use constraint in the database, not a hope that requests arrive slowly.
+- Mention the difference between a logic flaw (the rule is wrong) and a race (the rule is right and the window is wrong).

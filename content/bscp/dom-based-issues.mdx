@@ -1,0 +1,64 @@
+---
+title: DOM-based issues
+family: Client-side
+order: 300
+status: ready
+minutes: 14
+summary: DOM-based bugs are a source and a sink in the browser. The server response may never contain the dangerous value.
+objectives:
+  - Trace data from a browser source to a sink that interprets it
+  - Explain why server logs and Repeater can miss a fragment
+  - Relate DOM XSS to the encoding and CSP notes
+academy: DOM-based vulnerabilities
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: cross-site-scripting
+  - track: bscp
+    slug: content-security-policy
+tags:
+  - dom
+  - xss
+---
+
+## Core idea
+
+The document object model is the browser's live representation of the page. Client-side script reads from sources and writes to sinks. A **source** is untrusted data available in the browser: the URL, the fragment after the hash, storage, a message from another window, the referrer. A **sink** is an operation that interprets data as HTML, as a URL to navigate to, or as script.
+
+DOM-based XSS is the case where script copies a source into a sink that will execute or interpret it, even though the server never reflected that value. Other DOM bugs are the same plumbing with a different sink: an open redirect chosen from the URL, a client-side check that decides a privilege, or a message listener that trusts any sender.
+
+The fragment is the classic reason people miss these. The part of the URL after the hash is not sent to the server. Proxy history can show the request without the value that mattered. The value lived entirely in the browser.
+
+## What to look for
+
+While mapping, note scripts that:
+
+- Read from the location, from storage, or from `postMessage`
+- Write with an HTML parser sink, a `javascript` URL, or an eval-like call
+- Navigate to a URL taken from a parameter
+- Hide or show an administrative control based only on a value in the page
+
+You are looking for a path, not for a particular string. If every step between source and sink is under the application's control and the sink does not interpret markup, the path can be safe. If any step drops data into an interpreting sink, the path is the bug.
+
+<Lab>
+
+Load the lab and watch which requests the server actually receives. If the behavior changes when you edit only the fragment, the server is not in the loop. Use the browser's tools to see which script reads the value, and write down the source and the sink by name.
+
+Repeater still matters for the document that contains the script. Fetch that document, but do not expect the fragment to appear in the request. Collaborator is relevant only if the sink triggers a request you cannot see otherwise.
+
+Follow the Academy lab for any input it wants you to try. In this desk, the finished note is "source, sink, and the server never saw it." No script sample.
+
+</Lab>
+
+<Defend>
+
+Do not write untrusted data into interpreting sinks. Use safe text APIs when you mean to show text. Parse URLs and allow-list the destination before you navigate. Check the origin on messages from other windows. Encode at the sink, for that sink's context. A CSP that blocks inline script and unexpected destinations reduces the damage when a sink is wrong.
+
+</Defend>
+
+<Pitfall>
+
+Declaring a page safe because Repeater shows no reflection. Forgetting the fragment is client-only. Treating all DOM XSS as "just XSS" and skipping the source-sink sentence, which is the part a reviewer can act on. Testing `postMessage` bugs by messaging a real application from a page you host.
+
+</Pitfall>

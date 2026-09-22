@@ -1,0 +1,60 @@
+---
+title: Content Security Policy
+family: Client-side
+order: 280
+status: ready
+minutes: 13
+summary: CSP is a browser allow list for where a page may load code and who may frame it. A policy that allows inline script does not contain XSS.
+objectives:
+  - Read a CSP as an allow list of sources
+  - Explain why nonces or hashes are stronger than a wide script source
+  - Connect frame-ancestors to clickjacking
+academy: Content Security Policy
+related:
+  - track: security-plus
+    slug: mitigation-techniques
+  - track: bscp
+    slug: cross-site-scripting
+  - track: bscp
+    slug: clickjacking
+tags:
+  - csp
+  - browser
+---
+
+## Core idea
+
+Content Security Policy is a response header. It tells the browser which sources of script, style, images, and frames are acceptable for this page, and what to do when something else appears. It is a second layer behind contextual encoding. If an injection happens, a tight policy can stop the browser from running the injected script or from sending the result somewhere the attacker can read.
+
+The policy is an allow list. The dangerous exceptions are the ones that re-open inline script: `'unsafe-inline'`, and a script source so broad that the attacker can host a file there. A nonce (a one-time value on the script tag and in the header) or a hash of the exact script is how modern policies allow the scripts you wrote without allowing a script the attacker inserted.
+
+CSP also carries `frame-ancestors`, which is the current way to say who may embed the page. That overlaps the clickjacking note. Old `X-Frame-Options` is the narrower ancestor of that directive.
+
+## What to look for
+
+- Whether a policy exists at all on the response that renders user content
+- `script-src` and whether it allows inline script or data URLs
+- A nonce that is missing on the legitimate scripts, or a nonce that never changes and is easy to learn
+- `base-uri` and `object-src` left open, which are common ways a policy looks strict and is not
+- Report-only mode, which records violations and does not block them. Useful for rollout, useless as a defense you claim is on
+- Two headers that disagree, or a meta tag and a header that disagree
+
+<Lab>
+
+Open the lab response in Repeater and copy the policy into your notebook as a list of directives you personally understand. For each, write what it allows. You do not need to defeat the policy. You need to say whether it would stop inline script, and whether it says who may frame the page.
+
+If the lab shows a bypass, summarize the bypass as "the allow list included a source the attacker could write to" or "inline script was permitted." Leave the actual bypass steps in the lab.
+
+</Lab>
+
+<Defend>
+
+Start from a default that blocks inline script, then allow the specific scripts you ship with nonces or hashes. Set `base-uri` and `object-src` deliberately. Use `frame-ancestors` for framing. Deploy in report-only until the noise is gone, then enforce. Do not treat CSP as permission to skip output encoding. Encoding is the fix. CSP is the net.
+
+</Defend>
+
+<Pitfall>
+
+Seeing a CSP header and assuming XSS is handled. Leaving `'unsafe-inline'` in place because a widget wanted it. Forgetting report-only does not block. Maintaining the policy in a place the application never sends. Testing bypasses against sites that are not the lab.
+
+</Pitfall>

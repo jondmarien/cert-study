@@ -1,0 +1,68 @@
+---
+title: SQL injection
+family: Server-side
+order: 110
+status: ready
+minutes: 18
+summary: SQL injection is what happens when untrusted input changes the structure of a query instead of staying a value.
+objectives:
+  - Explain the difference between data and query structure
+  - Name the evidence classes you compare in Repeater
+  - State why parameterized queries close the class of bug
+academy: SQL injection
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: security-plus
+    slug: mitigation-techniques
+  - track: bscp
+    slug: command-injection
+tags:
+  - sqli
+  - injection
+---
+
+## Core idea
+
+A database query has structure (which tables, which condition, where the statement ends) and data (the email address, the product id). SQL injection happens when a string the user controls is concatenated into the structure. The database then parses the user's text as part of the command, not as a literal value.
+
+You do not need a payload library to understand the failure. The application handed the database a sentence and let the reader finish the sentence. The fix is to stop building sentences that way: send the structure and the data on separate channels. Parameterized queries, also called prepared statements, do that. The driver sends the statement shape once and binds each value so it cannot change the shape.
+
+Academy labs walk through specific syntax against deliberately vulnerable apps. Use those labs for the keystrokes. This note is the reasoning you should be able to narrate before you send anything.
+
+## What to look for
+
+On the map, mark inputs that are likely to be used in a lookup: search boxes, filters, sorts, and ids. Then look for evidence that the query parser, not just the application, reacted:
+
+- An error that mentions a database engine or a query, when a neighboring input does not
+- A true/false difference: one input returns a row and a logically opposite input returns none, beyond what the feature should do
+- A timing difference that tracks the database doing extra work, after you have a baseline for ordinary slowness
+- The same input behaving differently in a clause that is clearly dynamic, such as an ordering field the developer forgot cannot be a bound parameter in some stacks
+
+Different evidence classes correspond to different visibility. Sometimes the application shows the error. Sometimes it only changes which rows appear. Sometimes it shows nothing and you are inferring from timing. The class of bug is the same. The observation channel is not.
+
+Second-order cases store the input and only parse it later, in a different request. If the interesting request is not the one that accepted the input, say that explicitly in the note.
+
+<Lab>
+
+Pick one parameter. In Repeater, send the ordinary value and record status, length, and whether a row appears. That is the baseline.
+
+Then change the value only enough to test the hypothesis "this string is parsed as structure," using the technique the specific Academy lab is teaching. Compare the same three facts. If you are on a timing lab, send the baseline several times first so you know the jitter.
+
+Keep the attempts in one Repeater tab group. If you must iterate a small set of lab-provided variants, Intruder is acceptable after the baseline exists. Confirm any outlier back in Repeater.
+
+Write the conclusion as: which input reached a query, what evidence moved, and which control would have kept the input in the value channel. Do not paste a working query into this desk.
+
+</Lab>
+
+<Defend>
+
+Use parameterized queries for every dynamic value. Keep identifiers and sort columns on an allow list, because some of them cannot be bound as data. Return a generic error to the user and log the detail on the server. Least-privilege database accounts limit damage if a bug slips through. They are not a substitute for keeping data out of the statement structure. A web application firewall is a seatbelt, not the query API.
+
+</Defend>
+
+<Pitfall>
+
+Calling every database error an injection. Ignoring a parameter because it is numeric. Forgetting that a stored value can be parsed on a later page. Treating a filter that blocks one keyword as a fix. Moving on after the first lab syntax works, without being able to explain the evidence in words.
+
+</Pitfall>

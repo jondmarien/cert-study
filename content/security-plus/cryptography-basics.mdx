@@ -1,0 +1,51 @@
+---
+title: Cryptography basics
+family: General concepts
+order: 50
+status: ready
+minutes: 18
+summary: Pick the primitive that matches the goal. Encryption hides, hashes fingerprint, signatures tie a fingerprint to a key.
+objectives:
+  - Match symmetric encryption, asymmetric encryption, and hashing to a goal
+  - Explain a salt, a key, and a certificate at a definition level
+  - Avoid the trap of calling every secret a password
+related:
+  - track: bscp
+    slug: jwt-issues
+  - track: security-plus
+    slug: cia-and-foundations
+  - track: security-plus
+    slug: pki-and-certificates
+tags:
+  - crypto
+---
+
+## Core idea
+
+Cryptography on this exam is a sorting problem. You are given a goal and you name the tool.
+
+**Symmetric encryption** uses one shared key to hide data and to reveal it. It is fast. The hard part is getting the same key to both parties without exposing it. It provides confidentiality to anyone who does not have the key.
+
+**Asymmetric encryption** uses a key pair. What one key does, the other undoes. You can publish one key. It is slower, so real systems often use it to protect a symmetric key and then switch. It is how you get confidentiality without a pre-shared secret, and it is the math behind signatures.
+
+**Hashing** turns data into a short fingerprint. You cannot reverse a good hash to recover the file. If the fingerprint changes, the data changed. That is integrity, not secrecy. A hash of a password is not encryption. You verify a password by hashing the guess and comparing fingerprints.
+
+**A salt** is a unique value stored beside a password hash so that identical passwords do not produce identical fingerprints, and so a precomputed table has to be rebuilt per password. **A pepper** or a slow hash function is a different knob. The exam cares that you know why identical hashes are a problem.
+
+**A digital signature** is a private-key operation over a hash of the data. Anyone with the public key can check it. A valid signature supports integrity and authenticity. Shared secrets do not give you non-repudiation, because more than one person could have produced the tag. A signature is how you argue a specific key did.
+
+**A key** is a secret (or a public half of a pair) the algorithm needs. **A certificate** is a signed statement that binds a public key to a name. Certificates are the PKI outline. Do not call a certificate a password.
+
+**In transit** means the channel is protected (a TLS session). **At rest** means the stored bytes are protected. **In use** means the data is being computed on, which ordinary disk encryption does not cover. The exam uses those three phrases as locations, not as products.
+
+<Exam>
+
+"We need to know the file did not change" is a hash or a signature, not a cipher. "We need to hide the file" is encryption. "We need strangers to trust this public key belongs to this site" is a certificate. "Two identical passwords should not look identical in the database" is a salt. If the stem says the same key encrypts and decrypts, symmetric. If it says a public key, asymmetric.
+
+</Exam>
+
+<Pitfall>
+
+Saying TLS is a symmetric algorithm. The session uses symmetric encryption. The handshake uses asymmetric operations and certificates. Reusing a password as a hash with no salt and calling it secure storage. Confusing encoding (anyone can reverse it) with encryption (you need the key). Recommending encryption for a pure integrity question.
+
+</Pitfall>

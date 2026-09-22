@@ -1,0 +1,56 @@
+---
+title: Mitigation techniques
+family: Threats and mitigations
+order: 110
+status: ready
+minutes: 15
+summary: Mitigations are the controls you pair with a weakness. Learn the pairing, including when the answer is to remove the feature.
+objectives:
+  - Pair common weakness classes with a primary control
+  - Distinguish allow-listing from block-listing
+  - Choose segmentation, least privilege, or patching when the stem is vague
+related:
+  - track: security-plus
+    slug: security-controls
+  - track: bscp
+    slug: content-security-policy
+  - track: bscp
+    slug: csrf
+tags:
+  - mitigations
+---
+
+## Core idea
+
+A mitigation reduces the chance or the impact. The exam wants the control that addresses the cause, not a random best practice.
+
+| Weakness you were shown | Primary mitigation to consider |
+| --- | --- |
+| Injection into a query or command | Keep data out of the statement. Parameterize or avoid the shell |
+| Cross-site scripting | Encode for the output context. Add a tight content security policy |
+| Cross-site request forgery | Per-session secret on state changes, and a deliberate cookie policy |
+| Missing authorization | Server-side checks on every object and action |
+| Malware on endpoints | Least privilege, application control, and a maintained anti-malware stack |
+| Flat network | Segmentation, so one compromised host is not every host |
+| Stolen password reuse | MFA and breached-password screening |
+| Data readable in storage or on the wire | Encryption in the location the stem named |
+| Unpatched product | Patch, or isolate if you cannot patch |
+| Too much surface | Disable the unused service |
+
+**Allow-listing** permits only what you named. **Block-listing** forbids what you named and allows the rest. Allow-listing fails closed and is the stronger default when the set of good things is small. Block-listing fails open for anything you have not seen yet. Application control and egress proxies are common allow-list stories. A bad-domain feed is a block list.
+
+**Least privilege** and **segmentation** are the two mitigations that fit a huge number of stems. Use them when the story is "this account or this network could reach too much," not when the story is a specific missing patch.
+
+Hardening means changing a default so the product exposes less and logs more. It is preventive configuration.
+
+<Exam>
+
+If two answers are both sensible, choose the one that matches the failure mode. A content security policy does not fix SQL injection. A parameterized query does not fix a framed click. Segmentation does not replace a patch on a server that must stay exposed, but it limits the blast radius and is often the compensating control while you patch.
+
+</Exam>
+
+<Pitfall>
+
+Answering "encryption" for every stem. Recommending a block list when the set of allowed programs is what they described. Forgetting to disable the feature as a real mitigation. More tools are not always the control. Mixing up detective controls (an IDS) with preventive ones (a rule that drops the traffic).
+
+</Pitfall>
