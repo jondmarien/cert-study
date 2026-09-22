@@ -1,4 +1,6 @@
 ---
+import { ClientRouter } from "astro:transitions";
+
 import SearchDialog from "../components/react/SearchDialog";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -29,6 +31,9 @@ const documents = getSearchDocuments();
     <meta name="author" content="Jon Marien" />
     <title>{fullTitle}</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <ClientRouter />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -67,5 +72,12 @@ const documents = getSearchDocuments();
     </main>
     <SiteFooter />
     <SearchDialog client:idle documents={documents} />
+    <script>
+      document.addEventListener("astro:page-load", () => {
+        const alpine = window.Alpine;
+        if (!alpine) return;
+        alpine.initTree(document.body);
+      });
+    </script>
   </body>
 </html>

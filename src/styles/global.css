@@ -277,6 +277,14 @@ body {
   }
 }
 
+::view-transition-new(.search-enter) {
+  animation: search-pop 180ms ease-out both;
+}
+
+::view-transition-old(.search-exit) {
+  animation: search-pop 140ms ease-in reverse both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -284,5 +292,11 @@ body {
 
   .search-pop {
     animation: none;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
   }
 }

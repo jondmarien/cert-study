@@ -13,7 +13,9 @@ Structured reading for BSCP and Security+ (SY0-701 style): what to compare in a 
 [![Tailwind v4](https://img.shields.io/badge/css-Tailwind_v4-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![MDX](https://img.shields.io/badge/content-MDX-1b1f23?logo=mdx&logoColor=white)](https://mdxjs.com)
 
-[Quick Start](#-quick-start) · [How It Works](#-how-it-works) · [The Repo](#-whats-in-this-repo) · [Lesson Anatomy](#-anatomy-of-a-lesson) · [The Rules](#-non-negotiables) · [FAQ](#-faq--troubleshooting)
+<img alt="Study Desk: an open notebook, a teal ribbon, and a copper pen" src="docs/readme/hero.jpg" width="880" />
+
+[Quick Start](#-quick-start) · [Screenshots](#-screenshots) · [How It Works](#-how-it-works) · [The Repo](#-whats-in-this-repo) · [Lesson Anatomy](#-anatomy-of-a-lesson) · [The Rules](#-non-negotiables) · [FAQ](#-faq--troubleshooting)
 
 </div>
 
@@ -33,6 +35,7 @@ Question practice stays in **Drill**, with the coach. This app is the reading ha
 
 ## 📋 Table of contents
 
+- [Screenshots](#-screenshots)
 - [How it works](#-how-it-works)
 - [Quick start](#-quick-start)
 - [What's in this repo](#-whats-in-this-repo)
@@ -42,9 +45,27 @@ Question practice stays in **Drill**, with the coach. This app is the reading ha
 - [FAQ / troubleshooting](#-faq--troubleshooting)
 - [Status & roadmap](#-status--roadmap)
 
+## 📸 Screenshots
+
+The banner above is an illustration. These are the running desk.
+
+<p align="center">
+  <img alt="Home page in the dark theme, with the BSCP reminder and track cards" src="docs/readme/home.png" width="820" />
+</p>
+
+<p align="center">
+  <img alt="SQL injection lesson, with the in-the-lab callout" src="docs/readme/lesson.png" width="48%" />
+  <img alt="Search dialog open over the notes" src="docs/readme/search.png" width="48%" />
+</p>
+
+<p align="center">
+  <img alt="Mobile navigation menu" src="docs/readme/mobile.png" width="280" />
+  <img alt="Study Desk favicon, an open book on teal" src="public/favicon.png" width="128" />
+</p>
+
 ## 🔭 How it works
 
-Each lesson is one MDX file. Astro content collections check the frontmatter and render static pages. Interactive pieces are islands, so each one can be a different UI framework. Progress, theme, and the BSCP banner live in this browser.
+Each lesson is one MDX file. Astro content collections check the frontmatter and render static pages. Interactive pieces are islands, so each one can be a different UI framework. Moving between pages uses Astro's client router. Opening search uses React's view transitions. Progress, theme, and the BSCP banner live in this browser.
 
 ```mermaid
 flowchart TB
@@ -137,6 +158,8 @@ cert-study/
 | **`content/`** | The curriculum. 54 ready notes and 13 labeled outlines (67 files). |
 
 To add an island, put the component in the matching folder and use a `client:*` directive. React, Preact, and Solid all speak JSX, so `astro.config.mjs` limits each integration to its own folder. Vue and Svelte are picked up from their file extensions. Alpine is available on any page. Lit elements are defined in `src/components/lit/` and loaded with a `<script>` tag, which is the current Astro path for Lit.
+
+The UI packages are on the current stable releases: Astro 7.3, React 19.3, Vue 3.5, Svelte 5, Solid 1.9, Preact 10, Lit 3, and Alpine 3. The tab icon is `public/favicon.svg`, with a generated PNG at `public/favicon.png`.
 
 Progress keys, if you are inspecting the browser: `marien-study-progress`, `marien-study-theme`, `marien-study-bscp-banner`. There is no account. Clear progress from the About page.
 

@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
+
+// React 19.3 exports this value. Vite's SSR runner misses the named export on React's CommonJS entry.
+const ViewTransition = React.ViewTransition;
 
 import type { SearchDocument } from "@/lib/types";
 
@@ -6,6 +9,12 @@ import { SearchPanel } from "./SearchPanel";
 
 export default function SearchDialog({ documents }: { documents: SearchDocument[] }) {
   const [open, setOpen] = useState(false);
+
+  function setOpenAnimated(next: boolean) {
+    startTransition(() => {
+      setOpen(next);
+    });
+  }
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -18,16 +27,16 @@ export default function SearchDialog({ documents }: { documents: SearchDocument[
           target.tagName === "SELECT");
       if (event.key === "/" && !typing && !event.metaKey && !event.ctrlKey && !event.altKey) {
         event.preventDefault();
-        setOpen(true);
+        setOpenAnimated(true);
       }
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        setOpen(true);
+        setOpenAnimated(true);
       }
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") setOpenAnimated(false);
     }
     function onOpen() {
-      setOpen(true);
+      setOpenAnimated(true);
     }
     window.addEventListener("keydown", onKey);
     window.addEventListener("open-search", onOpen);
@@ -51,34 +60,36 @@ export default function SearchDialog({ documents }: { documents: SearchDocument[
   if (!open) return <span hidden data-search-dialog="closed" />;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[10vh]">
-      <button
-        type="button"
-        aria-label="Close search"
-        className="absolute inset-0 bg-ink/40"
-        onClick={() => setOpen(false)}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="search-dialog-title"
-        className="search-pop relative z-10 w-full max-w-xl rounded-2xl border border-line bg-card p-4 shadow-none"
-      >
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 id="search-dialog-title" className="font-display text-2xl">
-            Search notes
-          </h2>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="rounded-full border border-line px-3 py-1 text-sm"
-          >
-            Close
-          </button>
+    <ViewTransition enter="search-enter" exit="search-exit">
+      <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[10vh]">
+        <button
+          type="button"
+          aria-label="Close search"
+          className="absolute inset-0 bg-ink/40"
+          onClick={() => setOpenAnimated(false)}
+        />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="search-dialog-title"
+          className="search-pop relative z-10 w-full max-w-xl rounded-2xl border border-line bg-card p-4 shadow-none"
+        >
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 id="search-dialog-title" className="font-display text-2xl">
+              Search notes
+            </h2>
+            <button
+              type="button"
+              onClick={() => setOpenAnimated(false)}
+              className="rounded-full border border-line px-3 py-1 text-sm"
+            >
+              Close
+            </button>
+          </div>
+          <SearchPanel documents={documents} autoFocus onNavigate={() => setOpenAnimated(false)} />
+          <p className="mt-3 text-xs text-muted">Arrow keys move through results. Escape closes.</p>
         </div>
-        <SearchPanel documents={documents} autoFocus onNavigate={() => setOpen(false)} />
-        <p className="mt-3 text-xs text-muted">Arrow keys move through results. Escape closes.</p>
       </div>
-    </div>
+    </ViewTransition>
   );
 }
