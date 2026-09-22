@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 
 import QuizIndex from "../../components/react/QuizIndex";
 import Base from "../../layouts/Base.astro";
-import { QUIZ_TRACKS, type QuizTrack } from "../../lib/quiz-schema";
 
 const entries = await getCollection("quizzes");
 const fileQuizzes = entries
@@ -16,16 +15,6 @@ const fileQuizzes = entries
     questionCount: entry.data.questions.length,
   }))
   .sort((a, b) => a.title.localeCompare(b.title));
-
-function isQuizTrack(track: string): track is QuizTrack {
-  return (QUIZ_TRACKS as readonly string[]).includes(track);
-}
-
-for (const quiz of fileQuizzes) {
-  if (!isQuizTrack(quiz.track)) {
-    throw new Error(`Content error: content/quizzes/${quiz.id}.json has an unknown track`);
-  }
-}
 ---
 
 <Base title="Quizzes" description="Original concept checks for the study desk. Write more in this browser.">

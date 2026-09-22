@@ -38,6 +38,31 @@ function issueLines(error: { issues: { path: PropertyKey[]; message: string }[] 
   });
 }
 
+function compactChoices(question: DraftQuestion, questionIndex: number) {
+  const trimmed = question.choices.map((choice) => choice.trim());
+  const marked = trimmed[question.answer] ?? "";
+  if (!marked) {
+    return {
+      error: `questions.${questionIndex}.answer: mark a choice that has text. Blank boxes are left out of the saved quiz.`,
+    };
+  }
+  const choices: string[] = [];
+  let answer = 0;
+  trimmed.forEach((choice, index) => {
+    if (!choice) return;
+    if (index === question.answer) answer = choices.length;
+    choices.push(choice);
+  });
+  return {
+    question: {
+      prompt: question.prompt,
+      choices,
+      answer,
+      explain: question.explain,
+    },
+  };
+}
+
 export default function QuizEditor({ fileIds }: { fileIds: string[] }) {
   const [draft, setDraft] = useState<Draft>({
     title: "",
@@ -59,21 +84,30 @@ export default function QuizEditor({ fileIds }: { fileIds: string[] }) {
   }
 
   function buildQuiz() {
-    return quizSchema.safeParse({
+    const errors: string[] = [];
+    const questions = draft.questions.flatMap((question, questionIndex) => {
+      const compacted = compactChoices(question, questionIndex);
+      if ("error" in compacted) {
+        errors.push(compacted.error);
+        return [];
+      }
+      return [compacted.question];
+    });
+    if (errors.length > 0) return { ok: false as const, errors };
+    const parsed = quizSchema.safeParse({
       title: draft.title,
       track: draft.track,
       summary: draft.summary,
-      questions: draft.questions.map((question) => ({
-        ...question,
-        choices: question.choices.map((choice) => choice.trim()).filter(Boolean),
-      })),
+      questions,
     });
+    if (!parsed.success) return { ok: false as const, errors: issueLines(parsed.error) };
+    return { ok: true as const, data: parsed.data };
   }
 
   function save() {
     const parsed = buildQuiz();
-    if (!parsed.success) {
-      setErrors(issueLines(parsed.error));
+    if (!parsed.ok) {
+      setErrors(parsed.errors);
       return;
     }
     const id = draft.slug || slugifyTitle(parsed.data.title);
@@ -94,8 +128,8 @@ export default function QuizEditor({ fileIds }: { fileIds: string[] }) {
 
   function download() {
     const parsed = buildQuiz();
-    if (!parsed.success) {
-      setErrors(issueLines(parsed.error));
+    if (!parsed.ok) {
+      setErrors(parsed.errors);
       return;
     }
     const id = draft.slug || slugifyTitle(parsed.data.title) || "quiz";
