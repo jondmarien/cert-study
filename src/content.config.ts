@@ -3,9 +3,12 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 import { loadCurriculum } from "./lib/curriculum";
+import { quizSchema } from "./lib/quiz-schema";
+import { loadQuizFiles } from "./lib/quizzes";
 import { TRACK_IDS } from "./lib/types";
 
 loadCurriculum();
+loadQuizFiles();
 
 const lessonSchema = z
   .object({
@@ -43,7 +46,17 @@ function lessonCollection(base: string) {
   });
 }
 
+const quizzes = defineCollection({
+  loader: glob({
+    base: "./content/quizzes",
+    pattern: "*.json",
+    generateId: ({ entry }) => entry.split("/").pop()?.replace(/\.json$/, "") ?? entry,
+  }),
+  schema: quizSchema,
+});
+
 export const collections = {
   bscp: lessonCollection("./content/bscp"),
   "security-plus": lessonCollection("./content/security-plus"),
+  quizzes,
 };

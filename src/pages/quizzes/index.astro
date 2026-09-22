@@ -1,0 +1,30 @@
+---
+import { getCollection } from "astro:content";
+
+import QuizIndex from "../../components/react/QuizIndex";
+import Base from "../../layouts/Base.astro";
+
+const entries = await getCollection("quizzes");
+const fileQuizzes = entries
+  .map((entry) => ({
+    id: entry.id,
+    href: `/quizzes/${entry.id}`,
+    title: entry.data.title,
+    summary: entry.data.summary,
+    track: entry.data.track,
+    questionCount: entry.data.questions.length,
+  }))
+  .sort((a, b) => a.title.localeCompare(b.title));
+---
+
+<Base title="Quizzes" description="Original concept checks for the study desk. Write more in this browser.">
+  <header class="max-w-3xl">
+    <p class="text-xs uppercase tracking-[0.16em] text-muted">Concept checks</p>
+    <h1 class="mt-3 font-display text-5xl leading-none">Quizzes</h1>
+    <p class="mt-4 text-lg leading-8">
+      These are short checks you can add yourself. Two samples ship with the notes. Write another in this
+      browser, or drop a JSON file in <code>content/quizzes</code>. They are not an official exam bank.
+    </p>
+  </header>
+  <QuizIndex client:load fileQuizzes={fileQuizzes} />
+</Base>
