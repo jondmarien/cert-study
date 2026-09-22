@@ -15,7 +15,7 @@ Structured reading for BSCP and Security+ (SY0-701 style): what to compare in a 
 
 <img alt="Study Desk: an open notebook, a teal ribbon, and a copper pen" src="docs/readme/hero.jpg" width="880" />
 
-[Quick Start](#-quick-start) · [Screenshots](#-screenshots) · [How It Works](#-how-it-works) · [The Repo](#-whats-in-this-repo) · [Lesson Anatomy](#-anatomy-of-a-lesson) · [Quizzes](#-adding-a-quiz) · [The Rules](#-non-negotiables) · [FAQ](#-faq--troubleshooting)
+[Quick Start](#-quick-start) · [Screenshots](#-screenshots) · [How It Works](#-how-it-works) · [The Repo](#-whats-in-this-repo) · [Lesson Anatomy](#-anatomy-of-a-lesson) · [Quizzes](#-adding-a-quiz) · [On the desk](#-on-the-desk) · [The Rules](#-non-negotiables) · [FAQ](#-faq--troubleshooting)
 
 </div>
 
@@ -25,7 +25,7 @@ Structured reading for BSCP and Security+ (SY0-701 style): what to compare in a 
 
 This repo is Jon Marien's **reading desk** for two certification tracks. The pages are original study notes: the idea, the evidence a tester compares, the defensive control, and the pitfall. BSCP notes follow PortSwigger Web Security Academy topic families and the Burp tools you actually drive in a lab. Security+ notes follow the public SY0-701 domain names and stay short enough to review.
 
-Question practice stays in **Drill**, with the coach. This app is the reading half of that split.
+Longer question practice stays in **Drill**, with the coach. The desk itself has short original concept checks under Quizzes, and a Labs section for the concept figures.
 
 - 📖 **Lessons are MDX files.** One file per topic under `content/`. Frontmatter is checked at build time. A bad family name, a duplicate order, or a related link that does not exist fails `bun run build`.
 - 🧭 **The app is the desk around those files.** Home picks a track, each hub lists modules, search and filters narrow them, and the browser remembers what you have opened.
@@ -42,6 +42,7 @@ Question practice stays in **Drill**, with the coach. This app is the reading ha
 - [Anatomy of a lesson](#-anatomy-of-a-lesson)
 - [Adding a quiz](#-adding-a-quiz)
 - [The two tracks](#-the-two-tracks)
+- [On the desk](#-on-the-desk)
 - [Non-negotiables](#-non-negotiables)
 - [FAQ / troubleshooting](#-faq--troubleshooting)
 - [Status & roadmap](#-status--roadmap)
@@ -74,12 +75,15 @@ Each lesson is one MDX file. Astro content collections check the frontmatter and
 
 ```mermaid
 flowchart TB
-    FILES[("content/&lt;track&gt;/*.mdx<br/>filename = URL slug")]
+    FILES[("content/bscp and content/security-plus<br/>*.mdx, filename = URL slug")]
+    MORE[("content/labs/*.mdx<br/>content/quizzes/*.json")]
     LOAD["src/lib/curriculum.ts<br/>gray-matter + Zod<br/>family, order, related, start-here"]
-    PAGES["Astro pages<br/>home · track hubs · lessons · search"]
-    ISLANDS["Islands<br/>Solid theme · React search · Vue hubs<br/>Svelte progress · Preact home · Lit banner · Alpine menu"]
-    LOCAL[("localStorage<br/>progress · theme · banner")]
-    FILES --> LOAD --> PAGES --> ISLANDS --> LOCAL
+    PAGES["Astro pages<br/>home · hubs · lessons · labs · quizzes · search"]
+    ISLANDS["Islands<br/>Solid theme · React search and quizzes · Vue hubs<br/>Svelte progress · Preact home · Lit banner · Alpine menu"]
+    LOCAL[("localStorage<br/>progress · theme · banner · quizzes")]
+    FILES --> LOAD --> PAGES
+    MORE --> PAGES
+    PAGES --> ISLANDS --> LOCAL
 ```
 
 The same picture in plain ASCII:
@@ -88,11 +92,13 @@ The same picture in plain ASCII:
   content/bscp/*.mdx ─────────────┐
                                   ├──► Zod loader ──► static pages
   content/security-plus/*.mdx ───┘         │
+  content/labs/*.mdx ──────────────────────┤
+  content/quizzes/*.json ──────────────────┘
                                            ▼
-                          home · /bscp · /security-plus · /search
+        home · /bscp · /security-plus · /labs · /quizzes · /search
                                            │
                                            ▼
-                     this browser only: progress, theme, banner
+     this browser only: progress, theme, banner, custom quizzes, scores
 ```
 
 Opening a lesson marks it **in progress** if you had not marked it yet. Marking it **done** sticks; opening it again does not move it back. Search is `/` or Ctrl/Cmd+K. Escape closes it. Arrow keys move the results.
@@ -134,11 +140,11 @@ bun run lint
 
 ```
 cert-study/
-├── src/pages/               🌐 Routes: home, track hubs, lessons, search, about
+├── src/pages/               🌐 Routes: home, hubs, lessons, labs, quizzes, search, about
 ├── src/components/          🧩 Astro layout plus one folder per UI framework
 ├── src/lib/                 ⚙️ Curriculum checks, schema, tracks, search, keys
 │   └── study-config.ts      🗓️ BSCP planning date
-├── src/content.config.ts    📚 Astro content collections for the MDX lessons
+├── src/content.config.ts    📚 Collections: lessons, labs, and quizzes
 ├── content/
 │   ├── bscp/                🔓 BSCP lessons (*.mdx)
 │   ├── security-plus/       🛡️ Security+ lessons (*.mdx)
@@ -151,8 +157,8 @@ cert-study/
 
 | Path | What it is |
 | --- | --- |
-| **`src/pages/`** | Astro routes. Home, `/bscp`, `/security-plus`, `/[track]/[slug]`, `/quizzes`, `/labs`, `/search`, `/about`. |
-| **`src/components/react/`** | Search dialog, quiz player, and the in-browser quiz editor. |
+| **`src/pages/`** | Astro routes. Home, `/bscp`, `/security-plus`, `/[track]/[slug]`, `/quizzes`, `/labs`, `/search`, `/about`. `/edit/[track]/[slug]` exists only while `bun run dev` is running. |
+| **`src/components/react/`** | Search dialog, quiz player, in-browser quiz editor, and the dev-only lesson editor. |
 | **`src/components/vue/`** | Track hub filters and module list. |
 | **`src/components/svelte/`** | Lesson progress buttons. Opening a lesson marks it in progress. |
 | **`src/components/solid/`** | Light / Dark control. |
@@ -162,13 +168,13 @@ cert-study/
 | **`src/lib/curriculum.ts`** | Reads `content/`, validates frontmatter, builds search text, and picks previous/next among **ready** lessons only. |
 | **`src/lib/tracks.ts`** | Track copy, family names, and the start-here slugs. A lesson `family` must match a name here. |
 | **`src/lib/study-config.ts`** | `BSCP_LICENSE_ENDS`. Change this if the real Burp Suite Professional end date differs. |
-| **`content/`** | The curriculum. 57 ready notes and 11 labeled outlines (68 files). |
+| **`content/`** | 68 lesson files: 38 BSCP (33 ready, 5 outlines) and 30 Security+ (24 ready, 6 outlines). Nine lab pages in `content/labs/`. Two shipped quizzes in `content/quizzes/`. |
 
 To add an island, put the component in the matching folder and use a `client:*` directive. React, Preact, and Solid all speak JSX, so `astro.config.mjs` limits each integration to its own folder. Vue and Svelte are picked up from their file extensions. Alpine is available on any page. Lit elements are defined in `src/components/lit/` and loaded with a `<script>` tag, which is the current Astro path for Lit.
 
 The UI packages are on the current stable releases: Astro 7.3, React 19.3, Vue 3.5, Svelte 5, Solid 1.9, Preact 10, Lit 3, and Alpine 3. The tab icon is `public/favicon.svg`, with a generated PNG at `public/favicon.png`.
 
-Progress keys, if you are inspecting the browser: `marien-study-progress`, `marien-study-theme`, `marien-study-bscp-banner`. There is no account. Clear progress from the About page.
+Browser keys, if you are inspecting storage: `marien-study-progress`, `marien-study-theme`, `marien-study-bscp-banner`, `marien-study-quizzes`, and `marien-study-quiz-scores`. There is no account. Clear progress from the About page. Custom quizzes live only in that browser until you download the JSON.
 
 ## 🧬 Anatomy of a lesson
 
@@ -259,6 +265,13 @@ A quiz is one JSON file, or a quiz you save from `/quizzes/new`. The filename is
 
 `track` is `bscp`, `security-plus`, or `mixed`. `answer` is the index of the correct choice. `lesson` is optional and must point at a real note. Download from the editor writes this shape. Put the file in `content/quizzes/` and run `bun run build`.
 
+Two files ship with the repo:
+
+| File | Track | Tied to |
+| --- | --- | --- |
+| `content/quizzes/boundary-checks.json` | BSCP | Access control |
+| `content/quizzes/control-distinctions.json` | Security+ | Security controls |
+
 ## 🎯 The two tracks
 
 | Track | Route | Families | Start here |
@@ -266,9 +279,32 @@ A quiz is one JSON file, or a quiz you save from `/quizzes/new`. The filename is
 | **BSCP** | `/bscp` | Method, Burp workflow, Server-side, Authentication, Client-side | How to study, Proxy, SQL injection, Access control |
 | **Security+** | `/security-plus` | General concepts, Threats and mitigations, Architecture, Operations, Program management | General concepts, Vulnerability types, Identity and access, Risk management |
 
-BSCP covers Academy families at study level: server-side issues, authentication and session ideas, client-side browser rules, and when to use Proxy, Repeater, Intruder, Logger, and Collaborator. Security+ follows the five public SY0-701 domain names. Confirm current domain weights against CompTIA's outline before you sit. These notes paraphrase the ideas. They do not copy the official objective list.
+BSCP covers Academy families at study level: server-side issues (including race conditions), authentication and session ideas, client-side browser rules (including WebSockets and web LLM features), and when to use Proxy, Repeater, Intruder, Logger, and Collaborator. Security+ follows the five public SY0-701 domain names. Confirm current domain weights against CompTIA's outline before you sit. These notes paraphrase the ideas. They do not copy the official objective list.
 
-Outlines already in the tree (business logic, race conditions, cache poisoning, host headers, API testing, WebSockets, prototype pollution, and the Security+ stubs for change, PKI, assets, automation, awareness, and audits) are labeled and excluded from previous/next until their `status` is `ready` and their `order` moves onto the study path.
+Eleven files are still outlines. They are labeled, sorted under their family with `order` at 1000 or above, and kept off previous/next until `status` is `ready` and `order` moves onto the study path.
+
+| Track | Outlines |
+| --- | --- |
+| **BSCP** | API testing, business logic flaws, web cache poisoning, host header attacks, prototype pollution |
+| **Security+** | Change management, PKI and certificates, asset management, automation and orchestration, security awareness, audits and assessments |
+
+## 📚 On the desk
+
+Ready notes are the study path. Method covers how to study, scope, and reading an app. The five Burp tools each have a note (Proxy, Repeater, Logger, Intruder, Collaborator). Server-side ready notes run from access control through information disclosure, including race conditions. Authentication covers sessions, failures, MFA, OAuth, and JWTs. Client-side ready notes cover CORS, Content Security Policy, clickjacking, DOM-based issues, WebSockets, and web LLM features. Security+ has ready notes in every domain; the six stubs above are the gaps.
+
+`/labs` is nine pages from the Quartz lab notes. Each one links to a BSCP lesson. Seven include a concept figure under `public/labs/`. SQL injection and web LLM are the comparison only: the vault screenshots for those topics show solved requests, so they are not in this repo.
+
+| Lab page | Figure | Lesson |
+| --- | --- | --- |
+| Clickjacking | `clickjacking-layers.webp` | `/bscp/clickjacking` |
+| CORS | `cors-flow.png` | `/bscp/cors` |
+| Access control | `access-control-flow.png` | `/bscp/access-control` |
+| Authentication | `authentication-checks.png` | `/bscp/authentication-failures` |
+| SSRF | `ssrf-flow.webp` | `/bscp/ssrf` |
+| SQL injection | comparison only | `/bscp/sql-injection` |
+| Race conditions | `race-one-at-a-time.webp`, `race-window.webp` | `/bscp/race-conditions` |
+| WebSockets | `websocket-flow.png` | `/bscp/websockets` |
+| Web LLM | comparison only | `/bscp/web-llm` |
 
 ## 🔒 Non-negotiables
 
@@ -276,7 +312,7 @@ Outlines already in the tree (business logic, race conditions, cache poisoning, 
 2. **No exploit procedures.** No proof-of-concepts, weaponized payloads, malware, copy-paste attack scripts, wordlists, or tool walkthroughs that fire an attack.
 3. **No copied exam items.** Quizzes in `content/quizzes`, and quizzes saved in this browser, are original concept checks. Do not paste CompTIA or PortSwigger questions.
 4. **Original prose.** Citing a public Academy topic name in `academy:` is fine. Pasting their lab solutions is not.
-5. **The build is the editor.** Invalid frontmatter, a family that is not in `src/lib/tracks.ts`, a duplicate `order`, a related slug that does not exist, or a start-here slug that is missing or still an outline fails the build with `Content error:`.
+5. **The build checks the files.** Invalid frontmatter, a family that is not in `src/lib/tracks.ts`, a duplicate `order`, a related slug that does not exist, or a start-here slug that is missing or still an outline fails the build with `Content error:`. While `bun run dev` is running, the lesson editor runs those same checks before it writes.
 6. **Progress stays on this machine.** `localStorage` only. No accounts in v1.
 
 ## ❓ FAQ / troubleshooting
@@ -327,7 +363,7 @@ Open `/quizzes/new` and save it in this browser, or add `content/quizzes/your-sl
 
 ## 📈 Status & roadmap
 
-**Usable.** Both tracks are navigable. 57 lessons are ready notes. 11 are labeled outlines with a TODO list, sorted under their family and kept off the previous/next path. The BSCP learning-path notes from the Quartz desk are folded into the matching lessons. Race conditions and WebSockets are finished notes. Web LLM features is new. `/labs` is a separate section for the concept figures from those lab notes.
+**Usable.** Both tracks are navigable. 57 lessons are ready notes (33 BSCP, 24 Security+). 11 are labeled outlines with a TODO list, sorted under their family and kept off the previous/next path. The BSCP learning-path notes from the Quartz desk are folded into the matching lessons. Race conditions, WebSockets, and web LLM features are finished notes. `/labs` has the nine concept pages listed above, and `/quizzes` ships Boundary checks and Control distinctions.
 
 - [x] Home, track hubs, lesson pages, search, local progress, dark mode
 - [x] Astro islands for React, Vue, Svelte, Solid, Preact, Lit, and Alpine
@@ -336,7 +372,7 @@ Open `/quizzes/new` and save it in this browser, or add `content/quizzes/your-sl
 - [x] Security+ ready notes across the five SY0-701 style domains
 - [x] Fold in the Quartz BSCP learning-path notes without replacing the existing lessons
 - [x] Labs section for the Quartz concept figures, linked from the header
-- [ ] Fill the labeled outlines (business logic, cache poisoning, host headers, API testing, prototype pollution, and the six Security+ stubs)
+- [ ] Fill the labeled outlines (API testing, business logic, web cache poisoning, host header attacks, prototype pollution, and the six Security+ stubs)
 - [ ] Adjust `BSCP_LICENSE_ENDS` if the real license date differs from 21 December 2026
 
 ---
