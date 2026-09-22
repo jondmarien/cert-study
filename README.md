@@ -308,7 +308,15 @@ The date is a planning constant, `BSCP_LICENSE_ENDS` in `src/lib/study-config.ts
 <details>
 <summary><b>Which UI framework owns which control?</b></summary>
 
-Solid is the theme control. React is search. Vue is the track hub. Svelte is lesson progress. Preact is the home progress summary. Lit is the BSCP banner. Alpine is the mobile menu, the Search button, and the About page tools. Pages, lesson prose, and MDX callouts stay in Astro. New islands go in `src/components/&lt;framework&gt;/`.
+Solid is the theme control. React is search, quizzes, and the dev-only lesson editor. Vue is the track hub. Svelte is lesson progress. Preact is the home progress summary. Lit is the BSCP banner. Alpine is the mobile menu, the Search button, and the About page tools. Pages, lesson prose, and MDX callouts stay in Astro. New islands go in `src/components/&lt;framework&gt;/`.
+</details>
+
+<details>
+<summary><b>Can I edit a lesson from the site?</b></summary>
+
+Yes, while this machine is running `bun run dev`. Open a BSCP or Security+ note and choose **Edit this file**. Saving writes `content/bscp` or `content/security-plus` and reloads the compiled page. The same check as `bun run build` runs before the write, so a bad family, order, or related link is rejected and the file stays as it was.
+
+The published site is static HTML. It has no server that can change the repo, so the edit link is not on the deployed pages. See [On-demand rendering](https://docs.astro.build/en/guides/on-demand-rendering/) for why a static Astro build cannot accept that save.
 </details>
 
 <details>

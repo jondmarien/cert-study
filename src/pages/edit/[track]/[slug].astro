@@ -1,0 +1,31 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+
+import LessonEditor from "../../../components/react/LessonEditor";
+import Base from "../../../layouts/Base.astro";
+import { isTrackId, loadCurriculum } from "../../../lib/curriculum";
+
+export function getStaticPaths() {
+  if (import.meta.env.DEV !== true) return [];
+  return loadCurriculum().map((lesson) => ({
+    params: { track: lesson.track, slug: lesson.slug },
+  }));
+}
+
+const track = Astro.params.track ?? "";
+const slug = Astro.params.slug ?? "";
+if (!import.meta.env.DEV || !isTrackId(track)) {
+  throw new Error(`Content error: edit route is only available in dev (${track}/${slug})`);
+}
+
+const file = path.join(process.cwd(), "content", track, `${slug}.mdx`);
+if (!fs.existsSync(file)) {
+  throw new Error(`Content error: missing content/${track}/${slug}.mdx`);
+}
+const source = fs.readFileSync(file, "utf8");
+---
+
+<Base title={`Edit ${slug}`} description="Edit this lesson file while the dev server is running.">
+  <LessonEditor client:load track={track} slug={slug} source={source} />
+</Base>
