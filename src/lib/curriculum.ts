@@ -40,14 +40,21 @@ export function loadCurriculum(): Lesson[] {
   return lessons;
 }
 
+export function resolveLessonFile(track: string, slug: string): string | null {
+  if (!isTrackId(track) || !SLUG_PATTERN.test(slug)) return null;
+  const root = path.resolve(process.cwd(), "content", track);
+  const file = path.resolve(root, `${slug}.mdx`);
+  if (!file.startsWith(`${root}${path.sep}`)) return null;
+  return file;
+}
+
 export function saveLessonSource(track: string, slug: string, source: unknown): string[] {
   if (!isTrackId(track)) return ["Choose a BSCP or Security+ lesson."];
   if (typeof slug !== "string" || !SLUG_PATTERN.test(slug)) return ["That lesson address is not valid."];
   if (typeof source !== "string") return ["The editor did not send the note text."];
   if (source.length > 200_000) return ["That note is too large to save from the editor."];
-  const root = path.resolve(process.cwd(), "content", track);
-  const file = path.resolve(root, `${slug}.mdx`);
-  if (!file.startsWith(`${root}${path.sep}`)) return ["That path is not a lesson file."];
+  const file = resolveLessonFile(track, slug);
+  if (!file) return ["That path is not a lesson file."];
   if (!fs.existsSync(file)) return ["That lesson file does not exist yet. Add it in the repo first."];
   let candidate: Lesson;
   try {

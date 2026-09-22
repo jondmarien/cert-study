@@ -1,10 +1,9 @@
 ---
 import fs from "node:fs";
-import path from "node:path";
 
 import LessonEditor from "../../../components/react/LessonEditor";
 import Base from "../../../layouts/Base.astro";
-import { isTrackId, loadCurriculum } from "../../../lib/curriculum";
+import { loadCurriculum, resolveLessonFile } from "../../../lib/curriculum";
 
 export function getStaticPaths() {
   if (import.meta.env.DEV !== true) return [];
@@ -15,11 +14,11 @@ export function getStaticPaths() {
 
 const track = Astro.params.track ?? "";
 const slug = Astro.params.slug ?? "";
-if (!import.meta.env.DEV || !isTrackId(track)) {
+const file = resolveLessonFile(track, slug);
+if (!import.meta.env.DEV || !file) {
   throw new Error(`Content error: edit route is only available in dev (${track}/${slug})`);
 }
 
-const file = path.join(process.cwd(), "content", track, `${slug}.mdx`);
 if (!fs.existsSync(file)) {
   throw new Error(`Content error: missing content/${track}/${slug}.mdx`);
 }
