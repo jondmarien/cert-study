@@ -26,14 +26,55 @@ export function isTrackId(value: string): value is TrackId {
   return (TRACK_IDS as readonly string[]).includes(value);
 }
 
+function cacheAcrossReads(): boolean {
+  return import.meta.env?.DEV !== true;
+}
+
 export function loadCurriculum(): Lesson[] {
-  if (cached) return cached;
+  if (cached && cacheAcrossReads()) return cached;
   const lessons = TRACK_IDS.flatMap((track) => readTrack(track));
   assertUnique(lessons);
   assertRelated(lessons);
   assertStartHere(lessons);
-  cached = lessons;
+  if (cacheAcrossReads()) cached = lessons;
   return lessons;
+}
+
+export function resolveLessonFile(track: string, slug: string): string | null {
+  if (!isTrackId(track) || !SLUG_PATTERN.test(slug)) return null;
+  const root = path.resolve(process.cwd(), "content", track);
+  const file = path.resolve(root, `${slug}.mdx`);
+  if (!file.startsWith(`${root}${path.sep}`)) return null;
+  return file;
+}
+
+export function saveLessonSource(track: string, slug: string, source: unknown): string[] {
+  if (!isTrackId(track)) return ["Choose a BSCP or Security+ lesson."];
+  if (typeof slug !== "string" || !SLUG_PATTERN.test(slug)) return ["That lesson address is not valid."];
+  if (typeof source !== "string") return ["The editor did not send the note text."];
+  if (source.length > 200_000) return ["That note is too large to save from the editor."];
+  const file = resolveLessonFile(track, slug);
+  if (!file) return ["That path is not a lesson file."];
+  if (!fs.existsSync(file)) return ["That lesson file does not exist yet. Add it in the repo first."];
+  let candidate: Lesson;
+  try {
+    candidate = parseRawLesson(track, slug, source);
+  } catch (error) {
+    return [error instanceof Error ? error.message : "Could not read that note."];
+  }
+  try {
+    const next = loadCurriculum().map((lesson) =>
+      lesson.track === track && lesson.slug === slug ? candidate : lesson,
+    );
+    assertUnique(next);
+    assertRelated(next);
+    assertStartHere(next);
+  } catch (error) {
+    return [error instanceof Error ? error.message : "That note failed the content checks."];
+  }
+  fs.writeFileSync(file, source.endsWith("\n") ? source : `${source}\n`);
+  cached = null;
+  return [];
 }
 
 export function getTrackLessons(track: TrackId): Lesson[] {
@@ -122,26 +163,34 @@ function readTrack(track: TrackId): Lesson[] {
 
 function readLesson(track: TrackId, dir: string, file: string): Lesson {
   const slug = file.slice(0, -".mdx".length);
+  return parseRawLesson(track, slug, fs.readFileSync(path.join(dir, file), "utf8"));
+}
+
+function parseRawLesson(track: TrackId, slug: string, raw: string): Lesson {
   if (!SLUG_PATTERN.test(slug)) {
-    fail(`${track}/${file} slug must be lowercase letters, numbers, and hyphens`);
+    fail(`${track}/${slug}.mdx slug must be lowercase letters, numbers, and hyphens`);
   }
-  const raw = fs.readFileSync(path.join(dir, file), "utf8");
-  const parsed = matter(raw);
+  let parsed: { data: unknown; content: string };
+  try {
+    parsed = matter(raw);
+  } catch {
+    fail(`${track}/${slug}.mdx frontmatter could not be parsed`);
+  }
   const frontmatter = lessonFrontmatterSchema.safeParse(parsed.data);
   if (!frontmatter.success) {
     const details = frontmatter.error.issues
       .map((issue) => `${issue.path.join(".") || "frontmatter"}: ${issue.message}`)
       .join("; ");
-    fail(`${track}/${file} ${details}`);
+    fail(`${track}/${slug}.mdx ${details}`);
   }
   const data = frontmatter.data;
   if (!familyNames(track).includes(data.family)) {
     fail(
-      `${track}/${file} family "${data.family}" is not one of: ${familyNames(track).join(", ")}`,
+      `${track}/${slug}.mdx family "${data.family}" is not one of: ${familyNames(track).join(", ")}`,
     );
   }
   if (data.status === "ready" && !parsed.content.trim()) {
-    fail(`${track}/${file} is marked ready but has an empty body`);
+    fail(`${track}/${slug}.mdx is marked ready but has an empty body`);
   }
   return {
     ...data,

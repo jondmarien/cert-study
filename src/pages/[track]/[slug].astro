@@ -59,6 +59,14 @@ const crossLabel = track === "bscp" ? "Related Security+ ideas" : "Related BSCP 
         {lesson.minutes} min read
         {lesson.academy ? ` · Academy topic: ${lesson.academy}` : ""}
         {lesson.status === "outline" ? " · Outline, not a finished note" : ""}
+        {
+          import.meta.env.DEV ? (
+            <>
+              {" "}
+              · <a class="underline decoration-line underline-offset-4" href={`/edit/${lesson.track}/${lesson.slug}`}>Edit this file</a>
+            </>
+          ) : null
+        }
       </p>
       <LessonProgress client:load track={lesson.track} slug={lesson.slug} title={lesson.title} />
       {
