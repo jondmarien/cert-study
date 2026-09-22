@@ -1,0 +1,64 @@
+---
+title: JWT issues
+family: Authentication
+order: 260
+status: ready
+minutes: 15
+summary: A JWT is a signed set of claims. The bugs are trusting the header's algorithm, skipping the signature check, or not binding the token to this service.
+objectives:
+  - Read a JWT as header, claims, and signature without treating the claims as secret
+  - Explain algorithm confusion and missing verification as trust failures
+  - List the claims a verifier must actually check
+academy: JWT attacks
+related:
+  - track: security-plus
+    slug: cryptography-basics
+  - track: security-plus
+    slug: identity-and-access
+  - track: bscp
+    slug: oauth-flaws
+tags:
+  - jwt
+  - tokens
+---
+
+## Core idea
+
+A JSON Web Token is three parts: a header that describes how it was signed, a set of claims, and a signature or MAC over the first two. The claims are readable by anyone who has the token. Secrecy is not the point. Integrity is the point. If the verifier does not check the signature with a key the attacker does not control, the claims are just JSON the client wrote.
+
+Conceptual failure modes you should be able to name:
+
+- **No verification.** The server decodes the claims and skips the signature. Encoding is not authentication.
+- **Algorithm confusion.** The header says which algorithm was used. Some broken libraries trusted that header. One version of the mistake accepted a token that declared no signature. Another accepted a symmetric signature computed with a public key the attacker can also see, when the server intended an asymmetric algorithm. The verifier must decide the algorithm, not the token.
+- **Wrong audience or issuer.** A token minted for service A is presented to service B, and B does not check the audience. A valid signature from the wrong issuer is still the wrong token.
+- **Confused keys.** Weak HMAC secrets, keys reused across environments, or a verification key taken from a URL the token itself names.
+- **Lifetime ignored.** Expired tokens still accepted, or a long-lived token with no revocation story used as a session.
+
+You can explain all of that without forging a token. Forging one is the lab's job, inside the lab.
+
+## What to look for
+
+- A header or cookie whose value has the three-part shape
+- A server that still accepts the session after you alter a claim and leave the rest untouched, which suggests the signature is not binding the claims
+- Claims that include a role or a user id the application then trusts
+- A `kid` or similar header field that selects a key, especially if that selection comes from a file path or a URL. That is a key-lookup bug sitting beside the token bug
+
+<Lab>
+
+Capture the token from the lab in Proxy history. In your notebook, list the claim names and whether the lab's server should be checking issuer, audience, expiry, and algorithm. Do not paste the token into this repo. Tokens from labs are still credentials.
+
+In Repeater, the useful baseline is the request with the original token versus the request with the token removed. Further comparisons belong to the specific Academy lab. Summarize the result as which check was missing. Do not build a forged-token recipe here.
+
+</Lab>
+
+<Defend>
+
+Fix the accepted algorithms in the verifier configuration. Pin the issuer and audience. Check expiry. Use a library and keep it patched. Sign with a strong secret or a private key that never ships to clients. Do not take key identifiers from the token as a path or a URL. Prefer short lifetimes, and keep server-side sessions when you need revocation. Treat the header as untrusted input.
+
+</Defend>
+
+<Pitfall>
+
+Base64-decoding a token and calling that "breaking" it. The claims were never confidential. Trusting the algorithm header because the library's example did. Forgetting audience checks in a multi-service design. Pasting live tokens into notes or chat. Confusing JWT flaws with insecure deserialization. Related integrity problem, different mechanism.
+
+</Pitfall>

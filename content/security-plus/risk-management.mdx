@@ -1,0 +1,50 @@
+---
+title: Risk management
+family: Program management
+order: 230
+status: ready
+minutes: 16
+summary: Risk is likelihood and impact. The responses are avoid, mitigate, transfer, and accept. Residual risk remains after you choose.
+objectives:
+  - Define risk, threat, and vulnerability without collapsing them
+  - Choose a risk response that matches the stem
+  - Read a simple ALE statement as exposure, not as a lab exercise
+related:
+  - track: security-plus
+    slug: vulnerability-management
+  - track: security-plus
+    slug: program-management
+  - track: security-plus
+    slug: third-party-risk
+tags:
+  - risk
+---
+
+## Core idea
+
+**Risk** is the potential for loss when a threat exploits a vulnerability, considering how likely that is and how bad it would be. You already have separate notes for the threat and the vulnerability. This note is the decision.
+
+**Qualitative** risk uses ranks such as high, medium, and low. It is fast and it depends on the people in the room. **Quantitative** risk uses numbers. The classic teaching formula is annualized loss expectancy: how much one event costs (single loss expectancy) times how often you expect it per year (annualized rate of occurrence). You do not need a spreadsheet. You need to know that multiplying impact by frequency is an attempt to put a currency figure on exposure, and that the inputs are estimates.
+
+**Responses:**
+
+- **Avoid.** Stop the activity. No online payments means no online-payment fraud. You also lose the activity.
+- **Mitigate.** Apply a control that lowers likelihood or impact.
+- **Transfer.** Shift some impact to another party, usually by contract or insurance. You do not transfer the outage. You transfer money that follows the outage. Reputation often stays with you.
+- **Accept.** Do nothing extra, on purpose, with someone accountable. Acceptance of a risk you never looked at is not acceptance. It is neglect.
+
+**Residual risk** is what remains after the response. **Inherent risk** is the level before those controls. Controls move you from inherent toward residual. They rarely move you to zero. A register that shows no residual risk is not credible.
+
+Risk **appetite** is how much the organization is willing to carry. A control that costs more than the exposure is a hard sell, which is why the quantitative story exists. It is not a moral proof. Safety and legal duties can force a mitigation the spreadsheet dislikes.
+
+<Exam>
+
+Match verbs. "Stop offering the feature" is avoid. "Buy insurance" is transfer. "Install the control" is mitigate. "The director signed that we will live with it" is accept. If they ask what is left after the firewall, residual. If they give you a cost per incident and a frequency, they are pointing at quantitative risk even if you never multiply out loud.
+
+</Exam>
+
+<Pitfall>
+
+Saying "mitigate" for every option including insurance. Forgetting that acceptance must be explicit. Treating residual risk as a failure. Confusing the risk register with a vulnerability scanner export. The register is a decision record. Using the ALE formula as if the inputs were precise. They are judgments with dollar signs.
+
+</Pitfall>

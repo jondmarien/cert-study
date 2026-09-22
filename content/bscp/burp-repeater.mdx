@@ -1,0 +1,62 @@
+---
+title: Burp Repeater
+family: Burp workflow
+order: 50
+status: ready
+minutes: 14
+summary: Repeater is where you change one thing and compare the response. It is the default tool once the map exists.
+objectives:
+  - Compare a baseline request with a single deliberate change
+  - Read status, length, time, and reflection as evidence
+  - Keep Repeater tabs labeled so a lab can be reconstructed
+related:
+  - track: security-plus
+    slug: vulnerability-management
+  - track: bscp
+    slug: burp-proxy
+  - track: bscp
+    slug: sql-injection
+tags:
+  - burp
+  - repeater
+---
+
+## Core idea
+
+Repeater sends one request when you tell it to, then shows the response next to your edit. That is the whole tool. Its value is the comparison: you know exactly what you changed, and you can put the previous response beside the new one. Most Academy reasoning happens here, after Proxy history has shown you a request worth keeping.
+
+Intruder is for a list. Repeater is for a hypothesis. If you cannot say what you expect to be different, you are not ready to iterate a list.
+
+## What to look for
+
+Pick evidence before you interpret it:
+
+- **Status.** Did the decision change from success to denial, or the other way around?
+- **Length.** A small length change is often a different message. A large one is often a different body of data. Length alone is not proof.
+- **Time.** A delay can mean the server did more work. It can also mean the lab is slow. Repeat a baseline so you know the noise.
+- **Reflection.** If your input comes back, note the context: page text, an attribute, a script, an error. Context decides what the browser will do with it.
+- **Headers.** A new cookie, a redirect target, or a framing header is sometimes the entire finding.
+
+The Inspector view is useful because it shows parameters and cookies as fields, so you can see which value you are actually editing. Still change one field.
+
+<Lab>
+
+Send a request from history to Repeater. Rename the tab to the feature. Send it once, untouched, and write down status, length, and one phrase from the body. That is the baseline.
+
+Change a single value. Send again. Use the comparison view if you want the diff, but write the conclusion yourself: what changed, and which component must have trusted the input. If nothing changed, say so. A negative result belongs in the notebook too.
+
+Group tabs by lab so you can close them without mixing two targets. Do not paste live session material from Repeater into this desk.
+
+</Lab>
+
+<Defend>
+
+A defender reading your note should see a before and an after, and a proposed check. "The server included another user's record when the identifier changed, and the session was still mine" is a complete observation. The fix is a server-side authorization check, which is a different topic from how you edited the request.
+
+</Defend>
+
+<Pitfall>
+
+Changing three parameters and then guessing which one mattered. Treating any length change as success. Forgetting the baseline after the lab resets. Using Repeater against a host that is outside scope because the request was easy to duplicate.
+
+</Pitfall>

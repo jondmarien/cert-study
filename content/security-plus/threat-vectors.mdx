@@ -1,0 +1,50 @@
+---
+title: Threat vectors and attack surfaces
+family: Threats and mitigations
+order: 80
+status: ready
+minutes: 14
+summary: A vector is the path in. The attack surface is the set of paths you actually exposed.
+objectives:
+  - Name common vectors without describing how to abuse them
+  - Relate a web application's map to the idea of an attack surface
+  - Reduce surface by removing unused entry points
+related:
+  - track: bscp
+    slug: reading-a-web-app
+  - track: security-plus
+    slug: vulnerability-types
+  - track: security-plus
+    slug: threat-actors
+tags:
+  - vectors
+  - surface
+---
+
+## Core idea
+
+A **vector** is how an actor reaches a weakness. A **surface** is every place they might try. The exam lists paths more than it lists bugs:
+
+- **Email and messaging** carry links and attachments to people.
+- **Removable media** carries files past the network.
+- **Web applications and exposed services** are the BSCP map: anything that accepts a request.
+- **Wireless and remote access** extend the surface to wherever the device is.
+- **Social engineering** is a vector aimed at a person: phishing, vishing, smishing, pretexting. You need the names. You do not need a script.
+- **Supply chain** means the path runs through software or a vendor you trusted. That connects to third-party risk.
+- **Default credentials, open shares, and unused listening services** are surface you created by leaving the product as it shipped.
+
+Reducing surface is a preventive control: turn the service off, close the port, remove the account, stop accepting the file type. Patching a service you still need is vulnerability management. Removing a service you do not need is smaller surface. Both show up as answers. They are not the same answer.
+
+A web map (hosts, routes, uploads, parsers) is an attack-surface inventory for one application. Security+ asks for the same idea across an enterprise: people, devices, networks, software, and vendors.
+
+<Exam>
+
+If the stem says "the message asked the user to sign in," the vector is phishing, a social path, even if the eventual account takeover is the impact. If the stem says "an unused admin interface was left on the internet," the failure is surface, not a clever actor. Match the answer to the path they described.
+
+</Exam>
+
+<Pitfall>
+
+Listing every vector under "malware" as if malware were a path. Malware is what arrived. The vector is how it arrived. Confusing surface reduction with detection. Turning off a log does not reduce the attack surface of the application. It reduces your visibility. Expanding the BSCP notes into procedural steps on a Security+ answer.
+
+</Pitfall>

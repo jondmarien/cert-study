@@ -1,0 +1,48 @@
+---
+title: Security operations
+family: Operations
+order: 160
+status: ready
+minutes: 13
+summary: Domain overview. Operations is the largest published slice of SY0-701. It is the work of running identity, visibility, patches, and response.
+objectives:
+  - Separate operations from architecture and from program management
+  - Name the subnotes that carry this domain
+  - Recognize a "what do you do now" stem
+related:
+  - track: security-plus
+    slug: identity-and-access
+  - track: security-plus
+    slug: incident-response
+  - track: security-plus
+    slug: monitoring
+tags:
+  - domain
+  - operations
+---
+
+## Core idea
+
+Operations is how the designed system is run. On the published SY0-701 outline this is the largest domain, around 28 percent. Confirm the current weight. The work clusters into:
+
+- **Identity and access.** Joins, moves, leaves, and the checks on each request. Its own note.
+- **Monitoring.** Logs, alerts, and the difference between a tool that records and a tool that decides. Its own note.
+- **Vulnerability management.** Finding weaknesses and getting them fixed on a cadence. Its own note.
+- **Incident response.** What the organization does once an event is an incident. Its own note.
+- **Assets and automation.** Outlines for now. You cannot patch or respond to a system you do not know you have. Automation is how repetitive checks stay done. Both are operations even before the notes are finished.
+
+Architecture chose the segmentation. Operations notices the rule stopped working. Program management accepted the residual risk and funded the team. When a stem uses "first," "next," or "the technician should," you are usually in this domain.
+
+Change control straddles operations and governance. A change that skips review is an operational failure and a governance finding. The change-management outline is the placeholder for that overlap.
+
+<Exam>
+
+Do not answer an operational "what next" stem with a strategic framework. If they describe an active intrusion, the incident note's order of work beats a risk-register answer. If they describe a scan result sitting in a queue, vulnerability management beats incident response. The event is not automatically an incident.
+
+</Exam>
+
+<Pitfall>
+
+Studying this domain as a tool catalog. The exam is allergic to brand trivia and fond of jobs: collect, correlate, restrict, patch, contain, recover. Ignoring identity because the networking stories feel more concrete. Access reviews are operations, and they are frequent items.
+
+</Pitfall>

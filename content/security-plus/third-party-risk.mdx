@@ -1,0 +1,48 @@
+---
+title: Third-party risk
+family: Program management
+order: 240
+status: ready
+minutes: 13
+summary: Vendors enlarge the surface and the trust boundary. Agreements and reviews are how the program stays honest about that.
+objectives:
+  - Explain how a supplier becomes part of your attack surface
+  - Contrast a contract clause with a technical control
+  - Connect identity federation and data sharing to vendor decisions
+related:
+  - track: security-plus
+    slug: risk-management
+  - track: security-plus
+    slug: data-protection
+  - track: bscp
+    slug: oauth-flaws
+tags:
+  - vendors
+  - third-party
+---
+
+## Core idea
+
+A third party is anyone who is not you and can affect your security: software vendors, cloud providers, contractors, payment processors, and the company that empties the bins if they can walk past a desk. They add surface you do not fully operate. Supply-chain compromise is the dramatic case. Ordinary cases are quieter: a vendor account that is over-privileged, a support tunnel left open, or customer data stored in a tool nobody reviewed.
+
+The program tools are not exotic:
+
+- **Due diligence before the contract.** What do they hold, what can they reach, and what do their own reviews say?
+- **Agreements.** Security requirements, breach notification timelines, the right to assess, data return or deletion at the end, and which party is responsible for which layer in a cloud service.
+- **Least privilege for vendor access.** A named account, MFA, a time limit, and no shared "vendor" password.
+- **Ongoing review.** A questionnaire or a report is a moment in time. High-impact vendors get a cadence. Low-impact vendors get a lighter one. That is risk management applied to the roster.
+- **Exit.** How you turn the access off and get the data back. Leavers are not only employees.
+
+An OAuth grant to a third-party application is the same idea at the scale of one user. The organization still has a decision to make: is that client allowed to ask for that scope? Shadow IT is often a third-party decision made by an individual.
+
+<Exam>
+
+If the stem is a breach at a processor that held your customers' data, the topic is third-party risk and the agreement's notification and responsibility terms, not only "patch our servers." If the stem is a contractor still logging in after the project, it is vendor offboarding, the leaver process aimed at a non-employee. If they ask what you do before signing, due diligence.
+
+</Exam>
+
+<Pitfall>
+
+Trusting a logo or a compliance badge as a full assessment. Giving vendors standing administrator rights because setup was faster. Forgetting subprocessors, the vendors of your vendor. Answering with a firewall change when the data already lives in the vendor's application. Collecting vendor passwords into a spreadsheet as your "program."
+
+</Pitfall>

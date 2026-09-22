@@ -1,0 +1,59 @@
+---
+title: XML external entities
+family: Server-side
+order: 180
+status: ready
+minutes: 14
+summary: XXE is an XML parser that will load external entities, so a document the user supplied can make the parser read files or fetch URLs.
+objectives:
+  - Explain what an XML parser is being asked to trust
+  - Recognize features that accept XML
+  - State the fix as disabling external entities and DTD processing
+academy: XML external entity (XXE) injection
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: file-upload
+  - track: bscp
+    slug: ssrf
+tags:
+  - xxe
+  - parsers
+---
+
+## Core idea
+
+XML is not only a data format. A document can contain a document type definition that declares entities, and an entity can point outside the document: at a local file, or at a URL. If the parser resolves those entities, the document is a small program. The user who submitted the document chooses what it loads. That is XML external entity processing, XXE.
+
+The effects line up with other notes. A local file read is the path-traversal story, told through a parser. A URL fetch is the SSRF story, told through a parser. The root cause is the parser feature, which almost no application needs.
+
+Some parsers resolve entities by default. Some only do it when a developer turned a feature on. Some hide the loaded content and only change behavior (an error, a delay, a network call). Blind cases are still the same bug.
+
+## What to look for
+
+- Requests with an XML content type, or files that are XML in disguise (office documents, SVG, SOAP, SAML assertions)
+- A parser error that appears only when the document structure changes, not when a normal field changes
+- Features that import, convert, or validate a document
+- A server that fetches a URL only after an XML upload. Collaborator can show the fetch. The conclusion is still "the parser resolved an external entity"
+- Libraries embedded inside other products. The application code may not mention XML even though a dependency parses it
+
+<Lab>
+
+Find the request that carries XML and send a known-good document as the baseline. Follow the Academy lab for that parser exercise, and compare whether the response reveals loaded content, an error, or only an out-of-band interaction.
+
+In the note, record the endpoint, the fact that a parser stood between the user and the effect, and whether the effect was a file read or a fetch. Do not keep a document-type payload in this desk. The lab is the place that shows the syntax.
+
+</Lab>
+
+<Defend>
+
+Disable external entities and DTD processing in the parser configuration. Prefer a data format that does not have this feature, for ordinary application data. Patch the parser library. If you must accept XML from outside, parse it with the hardened settings and reject document types. Sandboxing the parser does not replace turning the feature off.
+
+</Defend>
+
+<Pitfall>
+
+Assuming JSON-only apps have no XML. Test frameworks and SSO libraries often do. Treating a file-read result as simple path traversal and missing the parser. Forgetting blind XXE because the response looked empty. Copying a payload into notes because the lab response was exciting.
+
+</Pitfall>

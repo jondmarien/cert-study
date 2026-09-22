@@ -1,0 +1,51 @@
+---
+title: Monitoring and logging
+family: Operations
+order: 180
+status: ready
+minutes: 14
+summary: Monitoring is collection plus a decision. Logs that nobody can trust or retrieve are not a detective control.
+objectives:
+  - Separate a log source, a SIEM, and an alert
+  - Explain why time sync and integrity of logs matter
+  - Relate Burp Logger to the idea of an audit trail without mixing the tools up
+related:
+  - track: bscp
+    slug: burp-logger
+  - track: security-plus
+    slug: indicators-of-activity
+  - track: security-plus
+    slug: incident-response
+tags:
+  - logging
+  - siem
+---
+
+## Core idea
+
+A **log** is a record a system wrote. **Monitoring** is the practice of using those records, plus other signals, to notice what matters. A **SIEM** is the usual product shape: collect, normalize, correlate, alert, and keep the record for later. The product name is less important than the jobs.
+
+What makes a log useful later:
+
+- **Time.** If clocks disagree, you cannot order an incident. Time sync is a security control because investigations are timelines.
+- **Identity.** A line that says "admin did it" from a shared account is a weak line.
+- **Integrity and retention.** The record has to survive the person who would delete it, and it has to last as long as policy says. That may mean a copy the application administrators cannot edit.
+- **Signal, not volume.** An alert that fires all day trains people to ignore it. Tuning is operational work.
+
+Sources the exam mentions in ordinary language: operating systems, firewalls and other boundaries, identity systems, applications, endpoints, and vulnerability scanners. Each sees a different layer. Correlation is how you tell a single password typo from a pattern across those layers.
+
+Burp Logger, on the BSCP track, is a tape of what your testing tools sent during an authorized lab. A SIEM is a tape of what the enterprise's systems did. Same idea, different duty. Do not answer a SOC question with a lab proxy.
+
+**NetFlow-style records** and full packet capture are different depths. One is metadata about conversations. The other is the content, expensive and sensitive. The stem's need (who talked to whom, versus what was inside) picks the depth.
+
+<Exam>
+
+If they ask what you need before correlating events from two sites, think time synchronization. If they ask what detects a pattern across log types, think SIEM or correlation, not a single firewall log. If they ask what preserves evidence, the answer may be the incident process plus immutable logs, not "turn on more debugging."
+
+</Exam>
+
+<Pitfall>
+
+Collecting everything and alerting on everything. Logging secrets and then treating the log server as low sensitivity. Forgetting that attackers edit logs on the hosts they own, so a remote copy matters. Confusing a vulnerability scan with continuous monitoring. A scan is a point in time.
+
+</Pitfall>

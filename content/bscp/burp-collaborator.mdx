@@ -1,0 +1,64 @@
+---
+title: Burp Collaborator
+family: Burp workflow
+order: 80
+status: ready
+minutes: 12
+summary: Collaborator shows out-of-band interactions when the bug is a request the server makes, not a response you can read.
+objectives:
+  - Decide when an in-band Repeater comparison is enough
+  - Explain what a Collaborator interaction proves and what it does not
+  - Keep Collaborator use inside the current lab
+related:
+  - track: security-plus
+    slug: monitoring
+  - track: bscp
+    slug: ssrf
+  - track: bscp
+    slug: burp-repeater
+tags:
+  - burp
+  - collaborator
+  - oast
+---
+
+## Core idea
+
+Some bugs never change the HTTP response you receive. The server does the interesting work elsewhere: it fetches a URL, it looks up a name, it calls another system. Repeater still shows your request and a boring response. Collaborator is how you see the other half. Burp gives you a unique hostname. If that name is resolved or fetched, the Collaborator tab records the interaction.
+
+The interaction is evidence that something you influenced caused a network action. It is not, by itself, a statement about impact. You still have to say which feature you were testing and why that action should not have been possible.
+
+## What to look for
+
+Reach for Collaborator when:
+
+- You suspect the server fetches a URL, imports a remote resource, or renders something that triggers a lookup
+- The response body stays the same no matter what you change
+- The Academy topic is explicitly about a blind or out-of-band behavior
+- You need to tell "the server ignored me" apart from "the server called out and hid the result"
+
+Do not reach for it when the response already contains the evidence. Extra infrastructure makes the note harder to defend.
+
+<Lab>
+
+Generate a Collaborator hostname for this lab only. In Repeater, place that hostname in the field you suspect the server will treat as a URL or a remote name. Send the request. Poll Collaborator. Record whether you saw a DNS interaction, an HTTP interaction, or nothing.
+
+Write the negative result down too. "No interaction" means that attempt did not cause a lookup. It does not prove the feature is safe. It proves this placement did not fire.
+
+Never point Collaborator at an organization outside the lab to "see if they are vulnerable." The hostname is a beacon. Sending it somewhere you are not allowed to test is the same kind of act as any other unsolicited test. Poll, record, and close the lab.
+
+Also remember the lab browser and the lab server are different. A lookup made by your own browser does not prove the server fetched anything. If you are unsure which side connected, say so in the note and design a comparison that only the server would perform.
+
+</Lab>
+
+<Defend>
+
+The defensive version of this question is egress control. Servers should not fetch arbitrary locations a user names. Allow lists, blocked link-local and metadata networks, and disabled unused importers are the usual answers. Your note should name the feature that fetched, not only the fact that a lookup happened.
+
+</Defend>
+
+<Pitfall>
+
+Calling any DNS hit a finished finding. Forgetting your own browser can also look up a name. Reusing one hostname across labs so you cannot tell which attempt fired. Leaving a Collaborator client running and then testing a host that is out of scope.
+
+</Pitfall>

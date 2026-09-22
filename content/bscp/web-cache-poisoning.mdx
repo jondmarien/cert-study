@@ -1,0 +1,32 @@
+---
+title: Web cache poisoning
+family: Server-side
+order: 1030
+status: outline
+minutes: 8
+summary: Outline only. Cache poisoning is a shared cache storing a response that was varied by an unkeyed input.
+objectives:
+  - Define a cache key versus an unkeyed input
+  - List what a finished note must explain before any lab work
+related:
+  - track: bscp
+    slug: host-header-attacks
+  - track: security-plus
+    slug: enterprise-infrastructure
+tags:
+  - outline
+  - cache
+academy: Web cache poisoning
+---
+
+## TODO
+
+Do not include poisoning requests in the finished note.
+
+## Checklist
+
+- A cache stores a response and reuses it for later callers. The cache key is the parts of the request the cache thinks identify that response.
+- Poisoning is possible when an unkeyed input (a header or a parameter the cache ignores) changes the body that gets stored.
+- The impact is other users receiving that stored body. That is why the topic stays inside a lab cache.
+- A finished note should cover how you tell a private browser cache from a shared cache, and the defensive habit of keying every input that changes the body, or ignoring it.
+- Related shape: host-header attacks, when the host value is unkeyed and is written into links.

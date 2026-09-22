@@ -1,0 +1,47 @@
+---
+title: Indicators of malicious activity
+family: Threats and mitigations
+order: 100
+status: ready
+minutes: 13
+summary: An indicator is evidence something is wrong. Learn the signal, not a hunt procedure.
+objectives:
+  - Separate a precursor, an indicator, and an incident
+  - Recognize account, network, and endpoint signals at a name level
+  - Avoid turning indicator lists into an investigation guide
+related:
+  - track: security-plus
+    slug: monitoring
+  - track: security-plus
+    slug: incident-response
+  - track: bscp
+    slug: information-disclosure
+tags:
+  - indicators
+  - detection
+---
+
+## Core idea
+
+A **precursor** is a sign that something may happen: a threat report, a scan against an unused service. An **indicator** is a sign that something is happening or did happen. An **incident** is the decision that the event is worth the response process. Not every indicator is an incident. The monitoring note is where the logs come from. This note is the vocabulary of what those logs are trying to say.
+
+Signals the exam expects you to recognize:
+
+- **Account:** impossible travel, a burst of failures then a success, a new privileged role, a mailbox rule that forwards mail outward, a dormant account that wakes up
+- **Network:** a host talking to an unusual destination, a beaconing pattern, a protocol on a port that does not match, a spike in outbound data
+- **Endpoint:** an unknown process, a security tool that stops running, a scheduled task you did not deploy, files encrypted in bulk
+- **Application:** error spikes, new admin users in a product you did not change, integrity failures on a binary
+
+The response to an indicator is not "collect everything." It is to confirm, contain if the incident process says so, and preserve the evidence the incident note describes. This desk does not provide hunt queries.
+
+<Exam>
+
+Match the signal to the place it would appear. A mailbox forwarding rule is an account or email indicator, not a firewall story. A disabled antivirus process is an endpoint indicator. If they ask for the first response step, that may be the incident-response note (identify and contain) rather than a deeper indicator name. Read the verb in the question.
+
+</Exam>
+
+<Pitfall>
+
+Memorizing indicator-of-compromise feeds. Treating every failed login as malice. Failed logins are also users. The pattern matters. Starting an investigation procedure from a study note. Confirmation and containment belong to the operations process, under authorization.
+
+</Pitfall>

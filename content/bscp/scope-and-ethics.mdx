@@ -1,0 +1,56 @@
+---
+title: Scope and ethics
+family: Method
+order: 20
+status: ready
+minutes: 12
+summary: Written permission, lab scope, and how to handle the secrets a proxy inevitably sees.
+objectives:
+  - State what "in scope" means before you send traffic
+  - Keep Burp project files as sensitive as the sessions they captured
+  - Refuse work that would touch a system you are not allowed to test
+related:
+  - track: security-plus
+    slug: governance-and-compliance
+  - track: bscp
+    slug: burp-proxy
+tags:
+  - ethics
+  - scope
+---
+
+## Core idea
+
+Every technique on this track assumes a target you are allowed to test. For BSCP practice, that target is a PortSwigger lab or another environment whose owner gave you written permission and a boundary. The tools do not know the difference between a lab and a stranger's site. You do.
+
+Scope is a list, not a vibe. It names hosts, and sometimes paths or accounts, that are in. Everything else is out, including linked sites, third-party analytics, and the identity provider's real production tenant. If a lab tells you the hostname, that hostname is the scope. If a request in Proxy history leaves that host, you do not "just see what happens."
+
+## What to look for
+
+Before the first active request, you should be able to point at:
+
+- The written permission, or the lab terms that grant it
+- The hostnames in scope
+- The accounts you may use
+- What you must not do: availability experiments, data export, scanning neighbors
+- Who you tell if you see real customer data you were not expecting
+
+<Lab>
+
+In Burp, set the target scope to the lab host and turn on "show only in-scope items" while you map. That single filter prevents a curious click from becoming a test of some other site the page loaded. If you use Intruder, set a low thread count and a short list you can explain. Stop when the lab has answered the question. Collaborator hosts are for that lab, not for probing organizations you do not have permission to test.
+
+When the lab is done, shut the project or store it somewhere you would store a password manager export. Proxy history contains session cookies. Treat it that way.
+
+</Lab>
+
+<Defend>
+
+Defenders write the same boundary down as rules of engagement: hosts, time window, accounts, and prohibited tests. Your lab notes should be able to survive being read by the person who owns the application. If a sentence would be harmful aimed at a host you do not own, it does not belong in this desk or in a ticket.
+
+</Defend>
+
+<Pitfall>
+
+"It was only a header." Leaving scope because a link looked interesting. Saving Burp projects in a shared folder. Using a word list or a scanner setting you cannot explain. Practicing techniques against your employer's production app because you work there. Employment is not authorization.
+
+</Pitfall>

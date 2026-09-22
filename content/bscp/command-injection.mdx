@@ -1,0 +1,59 @@
+---
+title: OS command injection
+family: Server-side
+order: 160
+status: ready
+minutes: 14
+summary: Command injection is user input concatenated into a shell command so the shell parses it as syntax rather than as data.
+objectives:
+  - Explain why a shell is a dangerous interpreter for untrusted strings
+  - Recognize features that wrap a system command
+  - Prefer argument arrays and avoiding the shell as the fix
+academy: OS command injection
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: sql-injection
+tags:
+  - injection
+  - command
+---
+
+## Core idea
+
+SQL injection and command injection are the same shape in different interpreters. A shell command has structure and data. If the application builds one string and asks a shell to parse it, metacharacters in the user's input become structure: extra commands, pipes, substitution. The operating system then does what the shell understood, which may not be what the developer wrote.
+
+The robust fix is to not invite a shell. Process APIs can take the program and its arguments as a list. The argument stays one argument even if it contains characters a shell would have treated as syntax. When a shell is genuinely required, the input has to be allow-listed to a tiny pattern, and that is the brittle path.
+
+You will see this around features that wrap an existing command: ping, image conversion, archive tools, backups, and anything that "just shells out" because that was shorter than a library call.
+
+## What to look for
+
+- A feature whose result clearly comes from a system command (timing of a network check, output that looks like a tool's normal output)
+- An input that is a hostname, a filename, or an option passed through to that tool
+- Errors that quote a command or show a shell complaint
+- A blind case, where the response does not show command output and you would need an out-of-band signal. That is a Collaborator decision, and only inside the lab
+- Defenses that strip one character and leave the rest of the shell's syntax intact
+
+<Lab>
+
+Baseline the feature with the lab's ordinary input. Record the response. Then follow that lab's exercise for a single change that would matter to a shell, and compare output, timing, or a Collaborator interaction as the lab directs.
+
+In the notebook, name the command the application was trying to run, the argument the user controlled, and whether a shell stood between them. That sentence is the finding. A copied command line is not, and it does not belong in this desk.
+
+If you cannot tell whether a shell was involved, say that. "The output changed" is an observation. "A shell parsed this" is a conclusion you earn by the lab's evidence.
+
+</Lab>
+
+<Defend>
+
+Call the program with an argument list and no shell. Allow-list hostnames or filenames to the narrow pattern the feature needs, after parsing, not by deleting characters. Drop privileges of the process. Replace shell-outs with library calls when they exist. Log the failure in generic form for the user.
+
+</Defend>
+
+<Pitfall>
+
+Treating this as SQL injection with different keywords. Assuming a removed character means the shell is safe. Forgetting quoting rules differ across operating systems, which is another reason not to build shell strings. Testing command injection against any host other than the lab. Storing a working command in your notes.
+
+</Pitfall>

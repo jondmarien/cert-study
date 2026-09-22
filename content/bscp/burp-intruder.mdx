@@ -1,0 +1,65 @@
+---
+title: Burp Intruder
+family: Burp workflow
+order: 70
+status: ready
+minutes: 16
+summary: Intruder iterates a list you can explain. Learn the placement modes, then keep the list short and the target in scope.
+objectives:
+  - Choose Repeater or Intruder based on whether you have one hypothesis or a list
+  - Describe the four placement modes without running a huge set
+  - Limit rate, scope, and list size before you start
+related:
+  - track: security-plus
+    slug: vulnerability-management
+  - track: bscp
+    slug: burp-repeater
+  - track: bscp
+    slug: authentication-failures
+tags:
+  - burp
+  - intruder
+---
+
+## Core idea
+
+Intruder sends many variants of one base request. You mark positions, you provide a list of values, and you compare the responses. Burp calls those values a payload set. On this desk that word only means "the list you are iterating." It does not mean a supplied attack list. Bring a short list from the lab instructions, or a handful of hypotheses you can say out loud.
+
+Intruder is the wrong tool when you do not yet have a baseline. Get that in Repeater. Intruder is the right tool when the question is "which of these few values changes the evidence?"
+
+## What to look for
+
+The placement modes are the thing worth memorizing:
+
+| Mode | What it does | When it fits |
+| --- | --- | --- |
+| Sniper | One list, placed in one position at a time | You have several fields and one list of guesses |
+| Battering ram | The same value goes in every marked position at once | The same token is repeated in more than one field |
+| Pitchfork | Several lists move together, row by row | Pairs that belong to each other, such as a user and that user's own identifier |
+| Cluster bomb | Every combination of the lists | Almost never, until you have counted how many requests that is |
+
+Before you start, know the stop condition. You are looking for a response that differs in status, length, time, or a reflected error. You are not looking for "as many requests as possible."
+
+Grep and extract settings are how you mark a feature of the response so the results table can be sorted. Decide the feature first: a specific error phrase the lab uses, a length band, or a header. Then the table is readable.
+
+<Lab>
+
+Take a request you already understand in Repeater. Send it to Intruder. Mark the smallest number of positions that match the question. Choose Sniper unless you have a reason you can write down. Use the lab's list, or type a few values yourself. Set threads low enough that you could watch the first responses arrive. Restrict the target to the in-scope host.
+
+Sort the results by length and by status. Open the outliers back in Repeater and confirm them one at a time. An Intruder row is a lead, not a conclusion.
+
+If the position is a login or a password field, remember the academic point: online guessing is slow, noisy, and often locked out. The lab is teaching you to notice that, not to build a guessing rig. Keep the list tiny.
+
+</Lab>
+
+<Defend>
+
+From the other side, the control is rate limiting, lockout, and removing the need to guess: unpredictable identifiers, locked object references, and server-side checks. If your test only worked because an identifier was a small integer, the note should say that. The fix is not "hide the parameter." The fix is to authorize the caller.
+
+</Defend>
+
+<Pitfall>
+
+Cluster bomb against a lab with two long lists. Pointing Intruder at a host outside scope. Treating a sorted results table as proof without replaying the interesting row in Repeater. Pasting a giant word list you did not choose and cannot explain. Using Intruder where a single Repeater comparison would have answered the question.
+
+</Pitfall>

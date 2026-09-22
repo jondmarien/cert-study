@@ -1,0 +1,57 @@
+---
+title: Clickjacking
+family: Client-side
+order: 290
+status: ready
+minutes: 11
+summary: Clickjacking is a visible, trusted page framed by an attacker's page so the victim's click lands on a control they did not mean to use.
+objectives:
+  - Explain framing as a UI attack rather than a request forgery
+  - Name the response headers that tell the browser not to frame a page
+  - Decide which pages need the restriction
+academy: Clickjacking
+related:
+  - track: security-plus
+    slug: mitigation-techniques
+  - track: bscp
+    slug: content-security-policy
+  - track: bscp
+    slug: csrf
+tags:
+  - clickjacking
+  - browser
+---
+
+## Core idea
+
+A browser will display one site inside a frame on another site unless somebody says not to. Clickjacking uses that. The victim sees what looks like the attacker's page. A transparent frame of a site they are logged into sits on top, aligned so a click hits a real button: delete, transfer, approve, change a setting. The request itself may be a normal authenticated request. The lie is in the pixels.
+
+This is not CSRF. CSRF forges a request the victim never saw. Clickjacking shows the real site and lies about what the click means. Defenses differ. A CSRF token does not stop a click on the real button. A framing policy does.
+
+## What to look for
+
+- State-changing pages that can be framed
+- Missing `frame-ancestors` in CSP, and missing `X-Frame-Options` on older stacks
+- A framing policy on the login page and not on the settings page, or the reverse
+- Defenses implemented only in script ("if we are framed, hide"), which the framing page can often interfere with. A browser-enforced header is the dependable control
+- Actions that should also demand a fresh confirmation the framed context cannot silently satisfy
+
+<Lab>
+
+In Repeater, request the sensitive page and read the framing headers. Write down whether the browser is told to refuse framing, and by which header. If both CSP and `X-Frame-Options` are present, note which one modern browsers will prefer, and whether they agree.
+
+The Academy lab may ask you to observe that a page can be framed when the header is absent. You can confirm the header behavior from the response itself. Do not publish a framing page, and do not frame a real application you are not allowed to test. A lab that wants the browser demo will host it.
+
+</Lab>
+
+<Defend>
+
+Send `frame-ancestors` with the origins that genuinely need to embed the page, often none. Keep `X-Frame-Options` where you still support clients that need it, with the same intent. Apply the header on every response that renders a sensitive action, not only on the home page. For high-impact buttons, require a confirmation that is hard to satisfy inside a hostile frame.
+
+</Defend>
+
+<Pitfall>
+
+Thinking a CSRF token solved framing. Applying the header only to HTML documents and forgetting a sensitive route. Using a JavaScript frame-buster as the only defense. Confusing clickjacking with "UI redress" trivia and missing the header check, which is the whole exam point.
+
+</Pitfall>

@@ -1,0 +1,58 @@
+---
+title: Insecure deserialization
+family: Server-side
+order: 200
+status: ready
+minutes: 14
+summary: Deserialization turns bytes back into objects. If those bytes came from the client, the client is choosing which objects the server builds.
+objectives:
+  - Explain why native object serialization is a code-loading boundary
+  - Recognize serialized data in cookies, tokens, and hidden fields
+  - Prefer plain data formats and allow-listed types
+academy: Insecure deserialization
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: jwt-issues
+tags:
+  - deserialization
+---
+
+## Core idea
+
+Serialization is how a program turns an object into bytes so it can be stored or sent. Deserialization is the reverse. In many languages, those bytes name a type, and the runtime constructs that type and fills its fields. If an attacker supplies the bytes, they may be able to name a type the developer never meant to construct. Some of those types run code as a side effect of being constructed or destroyed. That chain is a product of the libraries on the classpath or the module path. The bug class is "untrusted bytes were turned into live objects."
+
+This note stays conceptual on purpose. Gadget chains are exploit procedures. You need to recognize the boundary, not reproduce a chain.
+
+Safe alternatives are formats that carry data without naming executable types: JSON or another schema you validate, with an allow list of fields. Signatures matter too. A signed blob you do not deserialize until the signature checks is a different design from an unsigned object the runtime trusts immediately.
+
+## What to look for
+
+- Cookies or hidden fields that are clearly not plain text: opaque binary, or text that is obviously an encoded object rather than a random session id
+- Content types and API fields documented as a language-native serialized form
+- A session implementation that stores the whole user object in the cookie instead of a random handle
+- Framework features that restore state from the client between requests
+- Errors that mention a class, a type, or a serialization library when the blob is altered
+
+Altering the blob at random is a crude signal. If the server errors in a way that shows it tried to rebuild an object, you have learned the boundary exists. You have not learned a chain, and you should not go looking for one outside a lab that is explicitly teaching the topic.
+
+<Lab>
+
+Find the parameter that carries the serialized value. In your notes, record where it lives and that you did not copy the raw value into the repo. In Repeater, compare the baseline response with the value removed. If the lab walks through a safe observation (the server announces that it failed to restore state), write that observation.
+
+Do not assemble object graphs, and do not import gadget-chain tools into a notes file. If an Academy lab demonstrates impact, keep that inside the lab and summarize it as "the runtime constructed an unexpected type."
+
+</Lab>
+
+<Defend>
+
+Do not deserialize untrusted data with a native object serializer. Use a data format and validate it against a schema. If a platform requires native serialization, restrict types with an allow list and authenticate the bytes before you deserialize. Keep the session state on the server. Patch libraries that expose dangerous types, understanding that patching is how you shrink the set of types, not how you make untrusted deserialization safe.
+
+</Defend>
+
+<Pitfall>
+
+Confusing this with JWT. A JWT is a signed set of claims. A serialized object is a type graph. They both need integrity, and they fail differently. Pasting base64 blobs into notes. Treating "it is encoded" as "it is trusted." Hunting gadget chains against applications you are not allowed to test.
+
+</Pitfall>

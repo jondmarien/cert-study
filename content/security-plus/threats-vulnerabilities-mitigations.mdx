@@ -1,0 +1,46 @@
+---
+title: Threats, vulnerabilities, and mitigations
+family: Threats and mitigations
+order: 60
+status: ready
+minutes: 14
+summary: Domain overview. Separate the actor, the weakness, the event, and the control that answers it.
+objectives:
+  - Define threat, vulnerability, and risk without using them as synonyms
+  - Point to the subnotes for actors, vectors, weaknesses, indicators, and mitigations
+  - Keep web bug families mapped to categories instead of to exploit steps
+related:
+  - track: security-plus
+    slug: threat-actors
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: sql-injection
+tags:
+  - domain
+  - overview
+---
+
+## Core idea
+
+This is the heaviest conceptual domain after operations, and the one that overlaps BSCP. The exam still wants categories.
+
+- A **threat** is something that can cause harm. A **threat actor** is who or what. A **threat vector** is the path they use.
+- A **vulnerability** is a weakness that can be used. It is not the same as an incident. A missing patch can sit there for months with no actor.
+- An **exploit** is the use of a vulnerability. This desk does not catalog exploits. It asks you to name the weakness.
+- A **mitigation** is the control you apply. The mitigations note is the pairing exercise: weakness on the left, control on the right.
+- **Risk** is the domain-five idea: likelihood and impact if the threat uses the vulnerability. Do not answer a "what kind of actor" question with a risk formula.
+
+The subnotes split the domain the way the outline does: actors and motives, vectors and surfaces, types of vulnerability, indicators that something is happening, and mitigations. Read them as a set. The BSCP track is a detailed web-shaped example of the vulnerability note, not a replacement for it.
+
+<Exam>
+
+Stems in this domain love near-synonyms. If they describe a person and a motive, it is an actor. If they describe an email, a removable drive, or an open service, it is a vector. If they describe a missing control or an unpatched flaw, it is a vulnerability. If they describe logs, alarms, or strange traffic, it is an indicator. Answer the layer they asked about.
+
+</Exam>
+
+<Pitfall>
+
+Defining risk as "a virus." Calling every criminal a nation-state. Reciting a web payload when the item asked for the control category. Forgetting that mitigations include configuration and process, not only patches.
+
+</Pitfall>

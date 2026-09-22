@@ -1,0 +1,33 @@
+---
+title: API testing
+family: Method
+order: 1050
+status: outline
+minutes: 8
+summary: Outline only. APIs are the same trust decisions as pages, with less UI to hide a missing check.
+objectives:
+  - Map methods, object ids, and content types before testing
+  - Reuse the access-control and injection notes instead of inventing a new bug
+related:
+  - track: bscp
+    slug: reading-a-web-app
+  - track: bscp
+    slug: access-control
+tags:
+  - outline
+  - api
+academy: API testing
+---
+
+## TODO
+
+This should become a method note, not a payload list.
+
+## Checklist
+
+- Inventory methods on each object. A UI that only uses GET may still leave other methods enabled.
+- Identifiers in the path are the access-control question again.
+- JSON bodies are still data. Injection depends on whether that data is concatenated into a query, a command, or a template.
+- Mass assignment is a logic and access issue: the client sends a field the feature never displayed, and the server copies it onto the record.
+- Authentication schemes (cookie, bearer token, API key) change which notes apply. CSRF matters for cookie-authenticated browsers. It matters less for a header a foreign page cannot set. Say which one the lab uses.
+- Repeater and the map are the tools. Intruder only after a baseline, with a short lab list.

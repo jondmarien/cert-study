@@ -1,0 +1,32 @@
+---
+title: WebSockets
+family: Client-side
+order: 1060
+status: outline
+minutes: 8
+summary: Outline only. A WebSocket is a long-lived channel that still needs origin checks and authorization on each message.
+objectives:
+  - Explain the handshake versus the messages that follow
+  - Note which existing topics still apply after the upgrade
+related:
+  - track: bscp
+    slug: cors
+  - track: bscp
+    slug: access-control
+tags:
+  - outline
+  - websockets
+academy: WebSockets
+---
+
+## TODO
+
+Concept note only. No message exploits.
+
+## Checklist
+
+- The handshake is an HTTP upgrade. After that, frames are not ordinary requests, so CSRF tokens on later HTTP routes do not automatically cover messages.
+- The browser sends an `Origin` on the handshake. The server should check it. That is the CORS idea applied to a different channel.
+- Each message still needs authorization. A socket opened by a valid user can still ask for another user's object.
+- Proxy history shows the handshake. Burp can show the frames in the WebSocket history. The finished note should say which view you use for which half.
+- Encryption is `wss` versus a clear socket. That is transport protection, not authorization.

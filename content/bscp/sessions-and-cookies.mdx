@@ -1,0 +1,62 @@
+---
+title: Sessions and cookies
+family: Authentication
+order: 90
+status: ready
+minutes: 16
+summary: A session is the server's memory of who you are. Cookies are only the handle the browser presents.
+objectives:
+  - Separate the session record from the cookie that names it
+  - Read cookie flags as security decisions
+  - See why a browser-stored handle cannot be the authorization check
+related:
+  - track: security-plus
+    slug: identity-and-access
+  - track: bscp
+    slug: access-control
+  - track: bscp
+    slug: csrf
+tags:
+  - session
+  - cookies
+---
+
+## Core idea
+
+After login, the server remembers the result. That memory is the session. The browser is given a handle, usually a cookie, and sends the handle back on later requests. Anything the server does because that handle arrived is a decision based on the session, not based on the fact that a cookie exists.
+
+The handle should be unguessable, tied to the login that created it, and useless to a different party. The flags on the cookie are part of that design. They do not replace server-side checks. A perfect cookie still needs the server to ask "what may this session do?"
+
+## What to look for
+
+On a fresh login, compare the cookies before and after:
+
+- A new handle appeared. Note the name, not the value, in your written notes.
+- `HttpOnly` means script on the page cannot read it. That matters for session theft through a browser bug, and it does nothing for a request the browser will still send.
+- `Secure` means the browser will not attach it to plain HTTP.
+- `SameSite` is about when the browser will attach it to a request that another site started. That is the CSRF conversation.
+- Session lifetime and rotation: does login replace the handle, or keep the one you had before you authenticated? Reusing a pre-login handle is the fixation shape. The server should issue a new handle when the privilege changes.
+
+Also notice where the handle is not a cookie. Some apps put a bearer token in a header the script adds. The questions are the same: who creates it, who can read it, and which decisions trust it.
+
+<Lab>
+
+In Proxy history, find the login response and the next authenticated request. In Repeater, resend the authenticated request with the session handle removed and record the baseline difference: denied, redirected, or still served. That single comparison tells you whether the server is actually consulting the session.
+
+If the lab gives you two accounts, keep their handles in separate Repeater groups and never mix them by accident. When you mean to compare accounts, change only the handle, or only the object identifier, not both. Write down which one you changed.
+
+Do not copy raw session values into this desk. "Removed the session cookie" is the note.
+
+</Lab>
+
+<Defend>
+
+Issue a new session identifier at login. Store the session on the server, or use a token format you can validate and expire. Set the flags that match the threat: `HttpOnly` and `Secure` for a browser session cookie, and a deliberate `SameSite` choice. Expire sessions. None of that authorizes a specific object. Authorization is a second check.
+
+</Defend>
+
+<Pitfall>
+
+Calling every cookie a session. Assuming `HttpOnly` stops another site from triggering a request. Testing with one account and concluding access control is fine. Writing the cookie value into a notebook you might share. Forgetting a second session channel, such as a token in local storage, because the cookie looked like the whole story.
+
+</Pitfall>

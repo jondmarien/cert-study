@@ -1,0 +1,60 @@
+---
+title: Burp Proxy
+family: Burp workflow
+order: 40
+status: ready
+minutes: 14
+summary: Proxy is the map. Use history and scope first. Intercept is for a single request you mean to pause.
+objectives:
+  - Explain what the proxy records and why the project file is sensitive
+  - Use scope so lab traffic stays on the lab host
+  - Decide when intercept helps and when it gets in the way
+related:
+  - track: security-plus
+    slug: monitoring
+  - track: bscp
+    slug: reading-a-web-app
+  - track: bscp
+    slug: burp-repeater
+tags:
+  - burp
+  - proxy
+---
+
+## Core idea
+
+Burp Proxy sits on your machine, in the path of a browser you configured to use it. For a lab, that means you can see the HTTP the application really exchanged, including requests the page fired in the background. It is a local observation tool for an application you are allowed to test. It is not a way to watch someone else's traffic.
+
+Two views matter more than the intercept button. **HTTP history** is the ordered record of what the lab browser sent. **Scope** is the filter that keeps that record about the lab host. Intercept pauses a request so you can edit it before it leaves. That is useful for one awkward request. It is a bad default, because it trains you to click "forward" instead of to read.
+
+## What to look for
+
+In history, you are looking for the shape of the app, not for a magic string:
+
+- A parameter that selects an object
+- A cookie or header that appears only after login
+- A request whose response is an error, a redirect, or a different length from its neighbors
+- Calls to hosts that are outside the lab, which you note and then ignore
+- Repeating patterns (a list page, then a detail page) that tell you where an identifier is passed
+
+<Lab>
+
+Install the lab browser's trust in Burp's certificate only in that browser profile, and only so the proxy can show you the lab's own HTTPS. Do not install it into a browser you use for personal accounts.
+
+Set the target scope to the lab host. Turn intercept off. Use the application. Then sort history and send two or three representative requests to Repeater. If you need a header on every lab request, prefer a scoped match-and-replace rule you can name, and remove it when the lab ends.
+
+When a flow is hard to follow, open Logger rather than re-clicking the UI. The question to answer in notes is "what did the server receive?" not "what did the page look like?"
+
+</Lab>
+
+<Defend>
+
+Proxy history is a monitoring log of your own test. Defenders ask for the same kind of record from the server side: which identity called which route, and whether the decision was allowed. If your notes only contain screenshots of the UI, you do not yet know what the server saw.
+
+</Defend>
+
+<Pitfall>
+
+Leaving intercept on and losing the plot. Testing every host the page contacted. Copying session cookies out of history into a note you might paste somewhere public. Forgetting that the proxy sees passwords you typed into the lab. Using your everyday browser profile, where a personal session could be recorded next to the lab.
+
+</Pitfall>

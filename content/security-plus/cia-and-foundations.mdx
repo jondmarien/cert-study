@@ -1,0 +1,50 @@
+---
+title: CIA and the foundation terms
+family: General concepts
+order: 30
+status: ready
+minutes: 15
+summary: Confidentiality, integrity, and availability are the goals. AAA, non-repudiation, and a few neighbors are how the exam names the mechanisms.
+objectives:
+  - Match a scenario to confidentiality, integrity, or availability
+  - Separate authentication, authorization, and accounting
+  - Define non-repudiation as evidence someone cannot credibly deny
+related:
+  - track: security-plus
+    slug: cryptography-basics
+  - track: security-plus
+    slug: data-protection
+  - track: bscp
+    slug: sessions-and-cookies
+tags:
+  - cia
+  - aaa
+---
+
+## Core idea
+
+**Confidentiality** means the right parties can see the data and others cannot. Encryption, access control, and need-to-know all serve it. A leak is a confidentiality failure even when the data was not changed.
+
+**Integrity** means the data and the system have not been altered without authorization, and you can tell if they were. Hashing, signatures, and change control serve it. Ransomware that encrypts your files is an integrity and availability problem. The attacker can change or withhold the data.
+
+**Availability** means the service is there when it should be. Redundancy, backups, and capacity serve it. A denial-of-service is the obvious case. An accidental misconfiguration that takes the payroll system down is the same goal failing.
+
+The triad is a sorting hat, not a slogan. Most exam stems are a story about one goal being broken or one goal being the requirement.
+
+Beside the triad:
+
+- **Authentication** is proving who or what is asking. **Authorization** is what they may do. **Accounting** is the record of what they did. Together they are AAA. Identification is the claim ("I am this user"). Authentication is the proof of the claim. People collapse those two words. The exam sometimes does not.
+- **Non-repudiation** means the actor cannot credibly deny the act later. Signatures and strong audit trails are the usual mechanisms. A shared password destroys it, because the act cannot be tied to one person.
+- **Gap analysis** compares where you are to where a standard says you should be. It is a management tool, not a scanner.
+
+<Exam>
+
+If the story is "someone read it," confidentiality. "Someone changed it," integrity. "Nobody can use it," availability. If the story is "we need to prove Alice sent it," non-repudiation, which depends on integrity plus identity. If the story is "the log shows who did it," accounting, which supports non-repudiation only when the identity is strong.
+
+</Exam>
+
+<Pitfall>
+
+Calling hashing encryption. A hash supports integrity. Encryption supports confidentiality. A signature supports integrity and identity, which is how you get toward non-repudiation. Treating AAA as a product you buy rather than three jobs. Forgetting availability includes durable backups, not only uptime of the front end.
+
+</Pitfall>

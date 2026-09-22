@@ -1,0 +1,62 @@
+---
+title: Authentication failures
+family: Authentication
+order: 230
+status: ready
+minutes: 16
+summary: Password attacks are an economics problem. Online guessing, offline cracking, and reused passwords fail in different places, and the controls are different too.
+objectives:
+  - Distinguish online guessing, password spraying, and credential stuffing as ideas
+  - Explain why lockout and breached-password checks change the economics
+  - Review a lab login by its evidence, not with a word list
+academy: Authentication
+related:
+  - track: security-plus
+    slug: identity-and-access
+  - track: bscp
+    slug: mfa-bypass-concepts
+  - track: bscp
+    slug: sessions-and-cookies
+tags:
+  - authentication
+  - passwords
+---
+
+## Core idea
+
+A password is a secret the server can check. The failures are about how that check is implemented and about how people reuse secrets. Keep three ideas separate:
+
+- **Online guessing** sends attempts to the live login. The server sees every try. Rate limits and lockout exist for this case. Spraying is the variant that tries a few common passwords against many accounts so that no single account trips a lockout. It is still online guessing.
+- **Credential stuffing** uses passwords stolen from somewhere else, betting that people reused them. The defense is breached-password screening and multi-factor authentication, not a longer lockout alone.
+- **Offline cracking** happens when a password database leaks. The attacker is no longer talking to your login. They are guessing against hashes. The defense was in how you stored the password: a slow, salted password hash. A fast hash is a design error you cannot rate-limit after the file is gone.
+
+None of these definitions requires a word list, and this desk will not give you one. Academy labs that teach a login flaw will hand you the small set of values they want you to compare.
+
+## What to look for
+
+- Different error text for "no such user" and "wrong password"
+- A lockout that locks the account forever, or that does not exist
+- A reset flow that reveals whether the account is real, or that lets you set a password with a guessable token
+- A password change that does not ask for the current password
+- Response timing that differs when the user exists, even if the text is the same
+- A hash exposed through an error or a backup. At that point the conversation is storage, not the login form
+
+<Lab>
+
+Map the login and the reset flow with the lab's own accounts. In Repeater, send one known-good attempt and one known-bad attempt. Compare status, body text, and timing. If the lab asks you to try a handful of values it listed, do that and stop. Intruder is optional and only with that short list.
+
+Write which of the three ideas the lab was illustrating. If the flaw is "the reset token is the username," say that. Do not build a personal dictionary in the repo.
+
+</Lab>
+
+<Defend>
+
+Store passwords with a slow, salted password hash. Use one generic failure message. Rate-limit by account and by source, without creating a lockout an attacker can use to freeze every user. Screen new passwords against breached-password lists on the server side. Add phishing-resistant MFA for anything valuable. Rotate session handles at login. Require the current password to change the password.
+
+</Defend>
+
+<Pitfall>
+
+Mixing up the three attack ideas in an exam answer. Pasting leaked password dumps anywhere near a study repo. Treating lockout as the complete defense against stuffing. Measuring a timing gap once and calling it a user enumeration bug. Attacking a real login to "try a few passwords."
+
+</Pitfall>

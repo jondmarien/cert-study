@@ -1,0 +1,50 @@
+---
+title: Identity and access management
+family: Operations
+order: 170
+status: ready
+minutes: 16
+summary: IAM is the lifecycle of identities and the checks on each request. Least privilege and joiner-mover-leaver are the exam's favorite shapes.
+objectives:
+  - Walk an identity from creation to removal
+  - Apply least privilege, separation of duties, and time-of-day style constraints as ideas
+  - Connect federation and SSO to the OAuth and session notes without mixing them up
+related:
+  - track: bscp
+    slug: sessions-and-cookies
+  - track: bscp
+    slug: authentication-failures
+  - track: bscp
+    slug: oauth-flaws
+  - track: security-plus
+    slug: zero-trust
+tags:
+  - iam
+  - identity
+---
+
+## Core idea
+
+An identity is a record the organization can authenticate. Access management is the set of rules that turn that identity into permission. The operational work is the lifecycle:
+
+- **Join.** Create the account, assign the smallest role that does the job, require MFA where the risk says so.
+- **Move.** Change the role when the job changes. Add the new access and remove the old. Movers who accumulate roles are how least privilege dies.
+- **Leave.** Disable promptly, revoke sessions and tokens, collect the physical badge, and keep the audit record.
+
+**Least privilege** means the grant matches the task, not the person's seniority. **Separation of duties** means a sensitive outcome needs more than one person, so one compromised or dishonest insider cannot complete it alone. **Privilege access management** is the tighter process around admin rights: checkout, time limits, and logging. Standing global admin is the failure mode.
+
+**Federation** lets one organization accept identities another organization authenticates. **SSO** lets a person authenticate once and reach several applications. They often travel together and they are not the same sentence. Federation is about trust between issuers. SSO is about the user experience and the token or session that carries the proof. The BSCP OAuth and JWT notes are the web-shaped version of "what exactly did we trust?"
+
+Access reviews are the detective control that asks whether the grants still match the jobs. A review that always clicks approve is not a control.
+
+<Exam>
+
+A stem about a terminated employee who signed in the next week is a leaver failure. A stem about a clerk who can also approve their own payment is separation of duties. A stem about a contractor whose account works at every subsidiary may be federation scoped too widely. A stem about "one login for email and the expense tool" is SSO. Do not answer SSO with "OAuth" unless they described a grant to a third-party application. OAuth is one protocol family. SSO is the outcome.
+
+</Exam>
+
+<Pitfall>
+
+Leaving accounts disabled only in the directory while an API key still works. Confusing authentication strength with authorization. MFA does not decide which invoice you may open. Skipping movers because leavers are the dramatic case. Shared accounts, which make accounting and non-repudiation impossible.
+
+</Pitfall>

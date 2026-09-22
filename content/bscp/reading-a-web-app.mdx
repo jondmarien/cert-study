@@ -1,0 +1,62 @@
+---
+title: Reading a web application
+family: Method
+order: 30
+status: ready
+minutes: 18
+summary: Map endpoints, parameters, identities, and trust boundaries before you change a request.
+objectives:
+  - Build a map of the app from normal browsing
+  - Separate data the browser shows from decisions the server makes
+  - Choose which parameter is worth a careful comparison
+related:
+  - track: security-plus
+    slug: threat-vectors
+  - track: bscp
+    slug: burp-proxy
+  - track: bscp
+    slug: access-control
+tags:
+  - mapping
+  - method
+---
+
+## Core idea
+
+A web application is a set of decisions. Some happen in the browser (what to display, what script to run). Some happen on the server (who you are, which record you may see, what a query means). BSCP work gets easier when you can point at a decision and name the input that feeds it.
+
+Mapping is the quiet part. You use the application the way a user would, with the proxy recording, and you leave with a list: hosts, paths, parameters, cookies, roles, and anything that looks like an identifier. You are not trying to break anything yet. You are trying to see the surface.
+
+## What to look for
+
+Group what you see into a few buckets:
+
+- **Navigation.** Pages, APIs, and the order a task forces on you (login, then a form, then a confirmation).
+- **Inputs.** Query parameters, body fields, headers, filenames, and hidden fields. Note which ones the UI lets you edit and which ones it only displays.
+- **Identifiers.** Numbers, usernames, document names, or opaque tokens that pick a record. These are the usual access-control questions.
+- **Features that fetch or render.** URL import, image preview, PDF export, template preview, file upload, XML or JSON that the server parses. Each is a hint about a bug family, not a conclusion.
+- **Identities.** At least two roles when the lab gives them to you. A map with one user hides missing authorization.
+
+Write down what you think the server is deciding. "This parameter chooses the invoice" is a useful sentence. "This parameter looks hackable" is not.
+
+<Lab>
+
+Browse with intercept off and scope on. After a normal pass through the lab's features, sort Proxy history by path. For each interesting request, send it to Repeater only to have a clean copy, and label the Repeater tab with the feature name. Do not start changing values until the map exists.
+
+In the notebook, one row per endpoint is enough: method, path, the parameters that select a record or an action, and the role you were using. Logger helps when you need to reconstruct the order you clicked through a multi-step flow.
+
+When you do start comparing, change a single parameter from the map and record the baseline first. The map tells you which comparison is worth making.
+
+</Lab>
+
+<Defend>
+
+The same map is what a defender wants from a threat model: entry points, assets, and the decisions that protect them. If the server decides access by an identifier the client sends, that decision needs a server-side check against the caller's identity. Finding that shape early is the whole point of the map.
+
+</Defend>
+
+<Pitfall>
+
+Jumping at the first parameter that looks familiar. Mapping with a single account. Ignoring requests that are not HTML, such as background API calls. Testing a feature you have not used as a normal user, so you have no baseline for what "working" looks like.
+
+</Pitfall>

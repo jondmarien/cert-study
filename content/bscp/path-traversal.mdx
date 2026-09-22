@@ -1,0 +1,59 @@
+---
+title: Path traversal
+family: Server-side
+order: 150
+status: ready
+minutes: 14
+summary: Path traversal is a file path built from user input that escapes the directory the developer had in mind.
+objectives:
+  - Explain how a joined path can leave a root directory
+  - Identify file-read features on the map
+  - Name the defensive pattern of an allow list or a confined root
+academy: Directory traversal
+related:
+  - track: security-plus
+    slug: vulnerability-types
+  - track: bscp
+    slug: file-upload
+  - track: bscp
+    slug: information-disclosure
+tags:
+  - traversal
+  - files
+---
+
+## Core idea
+
+Applications build file paths by joining a base directory to a name the user supplied: a document id, an image name, a template. Path traversal is when that name contains a way to climb out of the base directory, and the operating system resolves the climb before the file is opened. The server then reads or writes a file the feature was never meant to touch.
+
+The idea is the join, not a particular string. If the application concatenates text and then asks the operating system to open whatever results, the operating system will honor directory navigation that was hiding in the text. Encoding and nested paths matter only because filters often look at the text before the operating system normalizes it.
+
+## What to look for
+
+- Parameters named like a file, a template, an image, or a document
+- Downloads that take a name rather than an opaque id
+- Error messages that reveal a base path when the name is wrong
+- A difference between "file not found" and "I am not allowed to say," which tells you the check ran
+- Upload features that later expose the stored name through a download route. That overlap is the file-upload note
+
+You are looking for a response that contains file content or a path error you did not get from the baseline name.
+
+<Lab>
+
+Request the feature with the lab's normal filename and save that response as the baseline. In Repeater, change only the name, following the Academy lab's instruction for that exercise. Compare whether the body is still the expected document, an error, or something that is clearly a different file.
+
+If a filter seems to be in the way, describe what the filter looked at (the raw text) versus what the operating system later opened (the normalized path). Do not keep a list of traversal strings in this repo. The lab has the exercise. Your note keeps the evidence: baseline body versus variant body, and the directory the feature was supposed to stay inside.
+
+</Lab>
+
+<Defend>
+
+Prefer an opaque identifier that the server maps to a stored path. If you must accept a name, resolve it and confirm the result is still inside the intended root after normalization, or select from an allow list. Do not filter a substring and then open the original string. Run the process with a filesystem identity that cannot read the rest of the machine.
+
+</Defend>
+
+<Pitfall>
+
+Assuming a numeric id cannot be a path. Stopping at the first filter. Calling a 404 proof that traversal is impossible. Forgetting the write side: a traversal that writes is a different impact from one that reads. Mixing this topic up with SSRF. One opens a path on the local system. The other makes a network request.
+
+</Pitfall>

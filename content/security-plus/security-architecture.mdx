@@ -1,0 +1,49 @@
+---
+title: Security architecture
+family: Architecture
+order: 120
+status: ready
+minutes: 13
+summary: Domain overview. Architecture is where you put the boundaries, the data, and the spare parts before an incident.
+objectives:
+  - Describe this domain as design rather than day-to-day operations
+  - Point to infrastructure, data protection, and resilience as the subnotes
+  - Recognize a design question versus an incident question
+related:
+  - track: security-plus
+    slug: enterprise-infrastructure
+  - track: security-plus
+    slug: resilience
+  - track: security-plus
+    slug: zero-trust
+tags:
+  - domain
+  - architecture
+---
+
+## Core idea
+
+Architecture is the shape you chose before the packet arrived. Operations is what you do after the system exists. The exam splits them so that "buy a spare site" and "follow the incident checklist" do not get the same answer.
+
+This domain covers:
+
+- Models such as zero trust, segmentation, and cloud responsibility. Zero trust has its own note because it is also a concepts-domain idea. Here it shows up as a way to draw the network.
+- Enterprise infrastructure: boundaries, name resolution, remote access, and where a control sits. That is the next note.
+- Data protection: classification, encryption locations, and privacy. Its own note.
+- Resilience: high availability, backups, and sites you can fail over to. Its own note.
+
+Physical security lives here too, even without a separate page yet. Badges, locks, cameras, mantraps, and screen filters are physical controls. Match them to the threat in the stem. A shoulder-surfing story wants a screen filter or privacy awareness. A tailgating story wants a physical control that admits one person, plus a human response. Do not answer a tailgating stem with a firewall.
+
+Cloud responsibility is an architecture fact. The provider secures the cloud fabric. You secure what you put in it. A virtual machine still needs your patches and your identity policy. A managed database still needs your access rules and your classification. "It is in the cloud" is not a control.
+
+<Exam>
+
+If the stem is about where to place a control or how the system should be built, stay in this domain. If the stem is about an alert firing tonight, go to operations. If the stem is about a policy owner or a risk acceptance, go to program management. The same firewall can appear in all three. The verb tells you which hat to wear.
+
+</Exam>
+
+<Pitfall>
+
+Drawing a single perimeter and calling it the architecture. Ignoring physical stories because they feel old. Assuming the cloud provider patches your guest operating system. Mixing RTO numbers into an infrastructure-placement question.
+
+</Pitfall>

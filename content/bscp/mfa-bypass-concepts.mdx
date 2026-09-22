@@ -1,0 +1,58 @@
+---
+title: MFA bypass concepts
+family: Authentication
+order: 240
+status: ready
+minutes: 12
+summary: MFA fails when the second factor can be phished, fatigued, skipped, or checked on a step the attacker does not have to repeat.
+objectives:
+  - Explain what a second factor actually proves
+  - Name fatigue, real-time phishing, and skipped checks as different failures
+  - Prefer phishing-resistant factors when the exam or the lab asks for a control
+academy: Authentication
+related:
+  - track: security-plus
+    slug: identity-and-access
+  - track: bscp
+    slug: authentication-failures
+tags:
+  - mfa
+  - authentication
+---
+
+## Core idea
+
+Multi-factor authentication asks for evidence from two different categories: something you know, something you have, or something you are. A second factor only helps if the attacker cannot produce it at the moment it is checked, and if the application actually checks it on every path that grants the session.
+
+The common conceptual failures:
+
+- **Skip the step.** The password step sets a session, and a second request never repeats the MFA check. Or a backup path, such as a remember-me cookie, never asked for the factor.
+- **Phish the factor in real time.** A one-time code the user can read can also be typed into an attacker's site while it is still valid. Push prompts can be approved by a tired person. That is fatigue, and it is a human failure of an approval-based factor.
+- **Steal the channel.** SMS arrives at a phone number an attacker can take over through the carrier. The factor was "control of this number," which turned out to be movable.
+- **Trust the client.** A parameter that says the factor succeeded is not a factor. The server has to remember, in the session, that the check passed.
+
+Phishing-resistant factors (hardware-backed or origin-bound proofs) exist because codes that a person can copy will be copied.
+
+## What to look for
+
+In a lab login, map every request between password acceptance and the fully privileged session. Note where the server records "MFA passed." Look for a second route to the same session that never hits that record. Look for a success flag the client sends. Look for a code that does not expire, or a prompt that can be repeated until someone approves it.
+
+<Lab>
+
+Walk the lab's login once, slowly, with Proxy history as the map. In Repeater, compare a request that includes the lab's second-factor step with the same request after you remove only that step's evidence. The question is whether the server stored the result or trusts the client to announce it.
+
+Do not harass a real person's phone prompts, and do not study SIM-swap procedure. The concept is enough: a movable phone number is a weak possession factor, and prompt spam is a denial and a social attack. Both are out of scope outside a designed lab.
+
+</Lab>
+
+<Defend>
+
+Record MFA completion on the server. Check it on every path that issues a privileged session, including recovery. Prefer origin-bound factors for high-risk actions. Rate-limit and lock prompts. Avoid SMS for anything you would be sad to lose. Recovery codes should be hashed, one-time, and stored with the same care as a password.
+
+</Defend>
+
+<Pitfall>
+
+Saying "MFA is on" as if that ended the design. Forgetting the recovery path. Confusing a client-side flag with a server-side check. Treating SMS and a hardware key as the same strength on a Security+ item. Writing procedures for bothering a real user into tapping approve.
+
+</Pitfall>

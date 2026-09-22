@@ -1,0 +1,31 @@
+---
+title: Automation and orchestration
+family: Operations
+order: 1040
+status: outline
+minutes: 8
+summary: Outline only. Automation repeats a check. Orchestration coordinates steps across systems. Both can spread a mistake quickly.
+objectives:
+  - Contrast automation with orchestration
+  - Note the benefits and the new failure mode
+related:
+  - track: security-plus
+    slug: security-operations
+  - track: security-plus
+    slug: change-management
+tags:
+  - outline
+  - automation
+---
+
+## TODO
+
+No infrastructure-as-code exploit content. Benefits and guardrails only.
+
+## Checklist
+
+- Automation does one repeatable task the same way. Orchestration runs a workflow across several tasks.
+- Benefits the exam likes: speed, consistency, fewer missed steps, a written definition of the desired state.
+- The new risk is blast radius. A bad change applied everywhere is still a bad change, faster.
+- Guardrails are change control, review of the automation itself, least privilege for the automation identity, and logging of what it did.
+- Human approval stays on the steps that deserve it. Automation is not an exception to separation of duties.
