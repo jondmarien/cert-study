@@ -1,0 +1,10 @@
+---
+import Callout from "./Callout.astro";
+import { calloutSections } from "../../lib/callouts";
+
+const section = calloutSections.Lab;
+---
+
+<Callout id={section.id} title={section.title} className="callout callout-lab">
+  <slot />
+</Callout>
