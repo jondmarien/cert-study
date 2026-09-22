@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+
+import QuizEditor from "../../components/react/QuizEditor";
+import Base from "../../layouts/Base.astro";
+
+const entries = await getCollection("quizzes");
+const fileIds = entries.map((entry) => entry.id);
+---
+
+<Base title="Write a quiz" description="Add an original concept check in this browser, or download it as JSON.">
+  <header class="mx-auto max-w-3xl">
+    <p class="text-xs uppercase tracking-[0.16em] text-muted">Concept checks</p>
+    <h1 class="mt-3 font-display text-5xl leading-none">Write a quiz</h1>
+    <p class="mt-4 leading-8">
+      Saving keeps the quiz in this browser. Download the JSON and commit it as
+      <code>content/quizzes/your-slug.json</code> when it should ship with the desk. Mark the correct choice
+      with the radio button. Keep the prompts conceptual.
+    </p>
+  </header>
+  <div class="mt-8">
+    <QuizEditor client:load fileIds={fileIds} />
+  </div>
+</Base>

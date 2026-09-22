@@ -1,0 +1,41 @@
+{
+  "title": "Control distinctions",
+  "track": "security-plus",
+  "summary": "Three Security+ style distinctions: disclosure versus change, what a camera is for, and what insurance does to a risk.",
+  "lesson": { "track": "security-plus", "slug": "security-controls" },
+  "questions": [
+    {
+      "prompt": "A record is shown to someone who should not have it, and the bits themselves are unchanged. Which goal failed?",
+      "choices": [
+        "Confidentiality",
+        "Integrity",
+        "Availability",
+        "Authentication"
+      ],
+      "answer": 0,
+      "explain": "Confidentiality is about unauthorized disclosure. Integrity is unauthorized or accidental change. Availability is being able to use the system when you should. Confirm the wording against CompTIA's glossary before the exam. This is a study distinction, not an official item."
+    },
+    {
+      "prompt": "A camera records who comes through a door. Which control shape is that?",
+      "choices": [
+        "Technical preventive",
+        "Physical detective",
+        "Managerial corrective",
+        "Technical compensating"
+      ],
+      "answer": 1,
+      "explain": "A camera records what happened, so it is detective, and it is a physical device. A lock on the same door would be physical preventive. The camera does not stop the entry by itself."
+    },
+    {
+      "prompt": "The team buys insurance for flood damage in the server room. What did they do with the risk?",
+      "choices": [
+        "Mitigate it by lowering the chance",
+        "Transfer the financial impact",
+        "Avoid it by leaving the room unused",
+        "Accept it with no further action"
+      ],
+      "answer": 1,
+      "explain": "Insurance shifts the financial impact to another party. Mitigation would be raising the equipment or adding a barrier. Avoidance would be not operating in that room. Acceptance is keeping the risk without extra action."
+    }
+  ]
+}

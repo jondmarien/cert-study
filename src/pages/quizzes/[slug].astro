@@ -1,0 +1,21 @@
+---
+import { getCollection } from "astro:content";
+
+import QuizPlayer from "../../components/react/QuizPlayer";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const quizzes = await getCollection("quizzes");
+  return quizzes.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const quiz = { id: entry.id, ...entry.data };
+---
+
+<Base title={quiz.title} description={quiz.summary}>
+  <QuizPlayer client:load quiz={quiz} />
+</Base>

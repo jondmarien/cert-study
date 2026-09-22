@@ -15,7 +15,7 @@ Structured reading for BSCP and Security+ (SY0-701 style): what to compare in a 
 
 <img alt="Study Desk: an open notebook, a teal ribbon, and a copper pen" src="docs/readme/hero.jpg" width="880" />
 
-[Quick Start](#-quick-start) · [Screenshots](#-screenshots) · [How It Works](#-how-it-works) · [The Repo](#-whats-in-this-repo) · [Lesson Anatomy](#-anatomy-of-a-lesson) · [The Rules](#-non-negotiables) · [FAQ](#-faq--troubleshooting)
+[Quick Start](#-quick-start) · [Screenshots](#-screenshots) · [How It Works](#-how-it-works) · [The Repo](#-whats-in-this-repo) · [Lesson Anatomy](#-anatomy-of-a-lesson) · [Quizzes](#-adding-a-quiz) · [The Rules](#-non-negotiables) · [FAQ](#-faq--troubleshooting)
 
 </div>
 
@@ -40,6 +40,7 @@ Question practice stays in **Drill**, with the coach. This app is the reading ha
 - [Quick start](#-quick-start)
 - [What's in this repo](#-whats-in-this-repo)
 - [Anatomy of a lesson](#-anatomy-of-a-lesson)
+- [Adding a quiz](#-adding-a-quiz)
 - [The two tracks](#-the-two-tracks)
 - [Non-negotiables](#-non-negotiables)
 - [FAQ / troubleshooting](#-faq--troubleshooting)
@@ -56,6 +57,10 @@ The banner above is an illustration. These are the running desk.
 <p align="center">
   <img alt="SQL injection lesson, with the in-the-lab callout" src="docs/readme/lesson.png" width="48%" />
   <img alt="Search dialog open over the notes" src="docs/readme/search.png" width="48%" />
+</p>
+
+<p align="center">
+  <img alt="Boundary checks quiz with the explanation shown" src="docs/readme/quiz.png" width="820" />
 </p>
 
 <p align="center">
@@ -136,7 +141,8 @@ cert-study/
 ├── src/content.config.ts    📚 Astro content collections for the MDX lessons
 ├── content/
 │   ├── bscp/                🔓 BSCP lessons (*.mdx)
-│   └── security-plus/       🛡️ Security+ lessons (*.mdx)
+│   ├── security-plus/       🛡️ Security+ lessons (*.mdx)
+│   └── quizzes/             ✅ Concept checks (*.json)
 ├── astro.config.mjs         🏝️ Framework integrations
 ├── bunfig.toml              📦 Forces the binary bun.lockb lockfile
 └── bun.lockb                🔒 Lockfile committed for a clean clone
@@ -144,8 +150,8 @@ cert-study/
 
 | Path | What it is |
 | --- | --- |
-| **`src/pages/`** | Astro routes. Home, `/bscp`, `/security-plus`, `/[track]/[slug]`, `/search`, `/about`. |
-| **`src/components/react/`** | Search dialog. |
+| **`src/pages/`** | Astro routes. Home, `/bscp`, `/security-plus`, `/[track]/[slug]`, `/quizzes`, `/search`, `/about`. |
+| **`src/components/react/`** | Search dialog, quiz player, and the in-browser quiz editor. |
 | **`src/components/vue/`** | Track hub filters and module list. |
 | **`src/components/svelte/`** | Lesson progress buttons. Opening a lesson marks it in progress. |
 | **`src/components/solid/`** | Light / Dark control. |
@@ -229,6 +235,29 @@ Security+ notes use `<Exam>` when the point is how a stem is usually framed. Do 
 
 The MDX compiler keeps these components and strips other `{expressions}`. In the body, avoid raw `{` `}` and avoid `<` except on `Lab`, `Defend`, `Pitfall`, and `Exam`.
 
+## 🧩 Adding a quiz
+
+A quiz is one JSON file, or a quiz you save from `/quizzes/new`. The filename is the slug.
+
+```json
+{
+  "title": "Boundary checks",
+  "track": "bscp",
+  "summary": "At least twenty-four characters describing the check.",
+  "lesson": { "track": "bscp", "slug": "access-control" },
+  "questions": [
+    {
+      "prompt": "A full question, at least twelve characters.",
+      "choices": ["First distinct choice", "Second distinct choice"],
+      "answer": 0,
+      "explain": "Why that choice matches the note, in your own words."
+    }
+  ]
+}
+```
+
+`track` is `bscp`, `security-plus`, or `mixed`. `answer` is the index of the correct choice. `lesson` is optional and must point at a real note. Download from the editor writes this shape. Put the file in `content/quizzes/` and run `bun run build`.
+
 ## 🎯 The two tracks
 
 | Track | Route | Families | Start here |
@@ -244,7 +273,7 @@ Outlines already in the tree (business logic, race conditions, cache poisoning, 
 
 1. **Study-level concepts and lab technique.** Describe what to look for and how a tester or defender reasons. Academy labs are where specific syntax belongs, and only against targets you are allowed to test.
 2. **No exploit procedures.** No proof-of-concepts, weaponized payloads, malware, copy-paste attack scripts, wordlists, or tool walkthroughs that fire an attack.
-3. **No question banks.** No copied CompTIA or PortSwigger exam items, and no original quiz engine or flashcard deck in this app. Drill owns the reps.
+3. **No copied exam items.** Quizzes in `content/quizzes`, and quizzes saved in this browser, are original concept checks. Do not paste CompTIA or PortSwigger questions.
 4. **Original prose.** Citing a public Academy topic name in `academy:` is fine. Pasting their lab solutions is not.
 5. **The build is the editor.** Invalid frontmatter, a family that is not in `src/lib/tracks.ts`, a duplicate `order`, a related slug that does not exist, or a start-here slug that is missing or still an outline fails the build with `Content error:`.
 6. **Progress stays on this machine.** `localStorage` only. No accounts in v1.
@@ -282,9 +311,9 @@ Solid is the theme control. React is search. Vue is the track hub. Svelte is les
 </details>
 
 <details>
-<summary><b>Can I add a quiz?</b></summary>
+<summary><b>How do I add a quiz?</b></summary>
 
-No. Question practice stays in Drill. New files here are reading notes.
+Open `/quizzes/new` and save it in this browser, or add `content/quizzes/your-slug.json` and rebuild. The file needs a title, a track (`bscp`, `security-plus`, or `mixed`), a summary, and one to twenty questions. Each question has a prompt, two to five distinct choices, an `answer` index, and an explanation. Prompts stay conceptual. A bad file fails `bun run build` with `Content error`.
 </details>
 
 ## 📈 Status & roadmap
@@ -293,6 +322,7 @@ No. Question practice stays in Drill. New files here are reading notes.
 
 - [x] Home, track hubs, lesson pages, search, local progress, dark mode
 - [x] Astro islands for React, Vue, Svelte, Solid, Preact, Lit, and Alpine
+- [x] Original concept quizzes, plus a browser editor that can download JSON
 - [x] BSCP ready notes for the high-yield Academy families and the five Burp tools
 - [x] Security+ ready notes across the five SY0-701 style domains
 - [ ] Fill the labeled outlines (business logic, race conditions, cache poisoning, host headers, API testing, WebSockets, prototype pollution, and the six Security+ stubs)

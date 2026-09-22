@@ -1,0 +1,41 @@
+{
+  "title": "Boundary checks",
+  "track": "bscp",
+  "summary": "Three distinctions from the BSCP notes: who may read a response, what a session proves, and which control stops injected script.",
+  "lesson": { "track": "bscp", "slug": "access-control" },
+  "questions": [
+    {
+      "prompt": "A script on another site can read an authenticated response from yours. What went wrong?",
+      "choices": [
+        "The browser refused to send the request",
+        "The server told the browser that the other origin may read the response",
+        "The user followed a link",
+        "The session cookie was marked Secure"
+      ],
+      "answer": 1,
+      "explain": "Cross-origin resource sharing decides whether foreign script may read the response. The request can still be sent. Cross-site request forgery is about an action caused by a request the browser attaches cookies to, not about reading the body."
+    },
+    {
+      "prompt": "Someone is signed in and can open another person's record by changing an identifier. Where is the gap?",
+      "choices": [
+        "Authentication, because the session exists",
+        "Access control on that specific object",
+        "Transport encryption",
+        "The absence of a login page"
+      ],
+      "answer": 1,
+      "explain": "Authentication already established who they are. The missing check is whether that identity may use that object. That check is access control."
+    },
+    {
+      "prompt": "Untrusted data is written into a page and the browser treats it as script. Which statement matches the notes?",
+      "choices": [
+        "A content security policy is the fix, and encoding is optional",
+        "Encode for the context the data is written into. A tight content security policy is a second layer",
+        "Hiding the element with CSS contains it",
+        "Turning off cookies removes the issue"
+      ],
+      "answer": 1,
+      "explain": "Output encoding stops the browser from treating data as script. A content security policy can limit what still runs if encoding fails. A policy that allows inline script does not contain the issue."
+    }
+  ]
+}
