@@ -8,8 +8,8 @@ Structured reading for BSCP and Security+ (SY0-701 style): what to compare in a 
 
 [![Runtime: Bun 1.4](https://img.shields.io/badge/runtime-Bun_1.4-f9f1e1?logo=bun&logoColor=black)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/lang-TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Next.js 16](https://img.shields.io/badge/framework-Next.js_16-black?logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![React 19](https://img.shields.io/badge/UI-React_19-61dafb?logo=react&logoColor=black)](https://react.dev)
+[![Astro](https://img.shields.io/badge/framework-Astro-bc52ee?logo=astro&logoColor=white)](https://astro.build)
+[![Islands](https://img.shields.io/badge/UI-React_%C2%B7_Vue_%C2%B7_Svelte_%C2%B7_Solid_%C2%B7_Preact_%C2%B7_Lit_%C2%B7_Alpine-111111)](https://docs.astro.build/en/guides/framework-components/)
 [![Tailwind v4](https://img.shields.io/badge/css-Tailwind_v4-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![MDX](https://img.shields.io/badge/content-MDX-1b1f23?logo=mdx&logoColor=white)](https://mdxjs.com)
 
@@ -27,7 +27,7 @@ Question practice stays in **Drill**, with the coach. This app is the reading ha
 
 - 📖 **Lessons are MDX files.** One file per topic under `content/`. Frontmatter is checked at build time. A bad family name, a duplicate order, or a related link that does not exist fails `bun run build`.
 - 🧭 **The app is the desk around those files.** Home picks a track, each hub lists modules, search and filters narrow them, and the browser remembers what you have opened.
-- 🗓️ **BSCP has a timing note.** The home page can show how many days are left before a planning date in `lib/study-config.ts` (21 December 2026). Dismiss it if you do not want the reminder.
+- 🗓️ **BSCP has a timing note.** The home page can show how many days are left before a planning date in `src/lib/study-config.ts` (21 December 2026). Dismiss it if you do not want the reminder.
 
 > **The notes are the source of truth.** Delete the UI and the same `.mdx` files are still the curriculum. Nothing in the app invents a lesson that is not a file.
 
@@ -44,16 +44,16 @@ Question practice stays in **Drill**, with the coach. This app is the reading ha
 
 ## 🔭 How it works
 
-Each lesson is one MDX file. The loader reads it, checks the frontmatter, and the App Router turns the ready notes into static pages. Progress, theme, and the BSCP banner live in this browser.
+Each lesson is one MDX file. Astro content collections check the frontmatter and render static pages. Interactive pieces are islands, so each one can be a different UI framework. Progress, theme, and the BSCP banner live in this browser.
 
 ```mermaid
 flowchart TB
     FILES[("content/&lt;track&gt;/*.mdx<br/>filename = URL slug")]
-    LOAD["lib/content.ts<br/>gray-matter + Zod<br/>family, order, related, start-here"]
-    PAGES["App Router<br/>home · track hubs · lessons · search"]
+    LOAD["src/lib/curriculum.ts<br/>gray-matter + Zod<br/>family, order, related, start-here"]
+    PAGES["Astro pages<br/>home · track hubs · lessons · search"]
+    ISLANDS["Islands<br/>Solid theme · React search · Vue hubs<br/>Svelte progress · Preact home · Lit banner · Alpine menu"]
     LOCAL[("localStorage<br/>progress · theme · banner")]
-    FILES --> LOAD --> PAGES
-    PAGES --> LOCAL
+    FILES --> LOAD --> PAGES --> ISLANDS --> LOCAL
 ```
 
 The same picture in plain ASCII:
@@ -84,7 +84,7 @@ bun install
 bun run dev
 ```
 
-Open the URL Bun prints (usually `http://localhost:3000`). Use `localhost`, not `127.0.0.1`: Next.js checks the dev origin, and this repo allows `127.0.0.1` in `next.config.ts` so both names can load client code.
+Open the URL Bun prints (usually `http://localhost:4321`).
 
 ### Path 2 — add a lesson
 
@@ -108,25 +108,35 @@ bun run lint
 
 ```
 cert-study/
-├── app/                     🌐 Routes: home, track hubs, lessons, search, about
-├── components/              🧩 Hubs, lesson chrome, search, theme, progress
-├── lib/                     ⚙️ Content loader, schema, tracks, search, keys
+├── src/pages/               🌐 Routes: home, track hubs, lessons, search, about
+├── src/components/          🧩 Astro layout plus one folder per UI framework
+├── src/lib/                 ⚙️ Curriculum checks, schema, tracks, search, keys
 │   └── study-config.ts      🗓️ BSCP planning date
+├── src/content.config.ts    📚 Astro content collections for the MDX lessons
 ├── content/
 │   ├── bscp/                🔓 BSCP lessons (*.mdx)
 │   └── security-plus/       🛡️ Security+ lessons (*.mdx)
+├── astro.config.mjs         🏝️ Framework integrations
 ├── bunfig.toml              📦 Forces the binary bun.lockb lockfile
 └── bun.lockb                🔒 Lockfile committed for a clean clone
 ```
 
 | Path | What it is |
 | --- | --- |
-| **`app/`** | Next.js App Router. Home, `/bscp`, `/security-plus`, `/[track]/[slug]`, `/search`, `/about`. |
-| **`components/`** | Track hubs and filters, lesson chrome (objectives, progress, previous/next), search dialog, theme toggle, BSCP banner. |
-| **`lib/content.ts`** | Reads `content/`, validates frontmatter, builds search text, and picks previous/next among **ready** lessons only. |
-| **`lib/tracks.ts`** | Track copy, family names, and the start-here slugs. A lesson `family` must match a name here. |
-| **`lib/study-config.ts`** | `BSCP_LICENSE_ENDS`. Change this if the real Burp Suite Professional end date differs. |
+| **`src/pages/`** | Astro routes. Home, `/bscp`, `/security-plus`, `/[track]/[slug]`, `/search`, `/about`. |
+| **`src/components/react/`** | Search dialog. |
+| **`src/components/vue/`** | Track hub filters and module list. |
+| **`src/components/svelte/`** | Lesson progress buttons. Opening a lesson marks it in progress. |
+| **`src/components/solid/`** | Light / Dark control. |
+| **`src/components/preact/`** | Home progress, continue card, and opening notes. |
+| **`src/components/lit/`** | BSCP timing banner, as a Lit custom element. |
+| **`src/alpine.ts`** | Mobile menu, the Search button, and the About page progress tools. |
+| **`src/lib/curriculum.ts`** | Reads `content/`, validates frontmatter, builds search text, and picks previous/next among **ready** lessons only. |
+| **`src/lib/tracks.ts`** | Track copy, family names, and the start-here slugs. A lesson `family` must match a name here. |
+| **`src/lib/study-config.ts`** | `BSCP_LICENSE_ENDS`. Change this if the real Burp Suite Professional end date differs. |
 | **`content/`** | The curriculum. 54 ready notes and 13 labeled outlines (67 files). |
+
+To add an island, put the component in the matching folder and use a `client:*` directive. React, Preact, and Solid all speak JSX, so `astro.config.mjs` limits each integration to its own folder. Vue and Svelte are picked up from their file extensions. Alpine is available on any page. Lit elements are defined in `src/components/lit/` and loaded with a `<script>` tag, which is the current Astro path for Lit.
 
 Progress keys, if you are inspecting the browser: `marien-study-progress`, `marien-study-theme`, `marien-study-bscp-banner`. There is no account. Clear progress from the About page.
 
@@ -156,7 +166,7 @@ tags:
 
 | Field | Rule |
 | --- | --- |
-| `family` | Exact name from `lib/tracks.ts` for that track. |
+| `family` | Exact name from `src/lib/tracks.ts` for that track. |
 | `order` | Integer, unique inside the track. Ready notes use the study path (10, 20, 30…). Outlines use **1000 and up** so they sit at the bottom of a family and stay off previous/next. |
 | `status` | `ready` or `outline`. A stub should also start the body with `## TODO` so the badge and the file agree. |
 | `minutes` | Integer from 1 to 90. |
@@ -213,21 +223,15 @@ Outlines already in the tree (business logic, race conditions, cache poisoning, 
 2. **No exploit procedures.** No proof-of-concepts, weaponized payloads, malware, copy-paste attack scripts, wordlists, or tool walkthroughs that fire an attack.
 3. **No question banks.** No copied CompTIA or PortSwigger exam items, and no original quiz engine or flashcard deck in this app. Drill owns the reps.
 4. **Original prose.** Citing a public Academy topic name in `academy:` is fine. Pasting their lab solutions is not.
-5. **The build is the editor.** Invalid frontmatter, a family that is not in `lib/tracks.ts`, a duplicate `order`, a related slug that does not exist, or a start-here slug that is missing or still an outline fails the build with `Content error:`.
+5. **The build is the editor.** Invalid frontmatter, a family that is not in `src/lib/tracks.ts`, a duplicate `order`, a related slug that does not exist, or a start-here slug that is missing or still an outline fails the build with `Content error:`.
 6. **Progress stays on this machine.** `localStorage` only. No accounts in v1.
 
 ## ❓ FAQ / troubleshooting
 
 <details>
-<summary><b>The page loads but clicks do nothing.</b></summary>
-
-Open `http://localhost:3000`. Next.js blocks dev resources from an origin it does not allow. `next.config.ts` lists `127.0.0.1` as an allowed dev origin so that name hydrates too.
-</details>
-
-<details>
 <summary><b><code>bun run build</code> says <code>Content error</code>.</b></summary>
 
-The message names the file. Usual causes: a `family` string that does not match `lib/tracks.ts`, two lessons in one track sharing an `order`, a `related` slug that does not exist, an unquoted colon in `summary`, or a start-here slug in `lib/tracks.ts` that is missing or still an outline.
+The message names the file. Usual causes: a `family` string that does not match `src/lib/tracks.ts`, two lessons in one track sharing an `order`, a `related` slug that does not exist, an unquoted colon in `summary`, or a start-here slug in `src/lib/tracks.ts` that is missing or still an outline.
 </details>
 
 <details>
@@ -245,13 +249,13 @@ It is in this browser, under `marien-study-progress`. Another browser, a private
 <details>
 <summary><b>The BSCP countdown looks wrong.</b></summary>
 
-The date is a planning constant, `BSCP_LICENSE_ENDS` in `lib/study-config.ts`, set to 21 December 2026 (about 90 days from when the desk was set up). Replace it with the real Burp Suite Professional end date. Dismissing the banner only hides it in this browser.
+The date is a planning constant, `BSCP_LICENSE_ENDS` in `src/lib/study-config.ts`, set to 21 December 2026 (about 90 days from when the desk was set up). Replace it with the real Burp Suite Professional end date. Dismissing the banner only hides it in this browser.
 </details>
 
 <details>
-<summary><b>Why Next.js, not Astro?</b></summary>
+<summary><b>Which UI framework owns which control?</b></summary>
 
-Astro is a strong fit for a markdown study site: typed content collections, MDX as a core feature, and islands so search or progress can be the only client JavaScript. This desk stays on Next.js. That was the stack for v1, and the interactive pieces (search, hub filters, local progress, theme) are already built as React client state. Moving frameworks now would rewrite the desk without changing the curriculum. Astro is a good thing to try on a smaller content project first.
+Solid is the theme control. React is search. Vue is the track hub. Svelte is lesson progress. Preact is the home progress summary. Lit is the BSCP banner. Alpine is the mobile menu, the Search button, and the About page tools. Pages, lesson prose, and MDX callouts stay in Astro. New islands go in `src/components/&lt;framework&gt;/`.
 </details>
 
 <details>
@@ -265,6 +269,7 @@ No. Question practice stays in Drill. New files here are reading notes.
 **Usable.** Both tracks are navigable. 54 lessons are ready notes. 13 are labeled outlines with a TODO list, sorted under their family and kept off the previous/next path.
 
 - [x] Home, track hubs, lesson pages, search, local progress, dark mode
+- [x] Astro islands for React, Vue, Svelte, Solid, Preact, Lit, and Alpine
 - [x] BSCP ready notes for the high-yield Academy families and the five Burp tools
 - [x] Security+ ready notes across the five SY0-701 style domains
 - [ ] Fill the labeled outlines (business logic, race conditions, cache poisoning, host headers, API testing, WebSockets, prototype pollution, and the six Security+ stubs)

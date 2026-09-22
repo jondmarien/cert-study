@@ -1,0 +1,187 @@
+---
+import { getEntry, render } from "astro:content";
+
+import Defend from "../../components/mdx/Defend.astro";
+import Exam from "../../components/mdx/Exam.astro";
+import Lab from "../../components/mdx/Lab.astro";
+import MdxLink from "../../components/mdx/MdxLink.astro";
+import MdxTable from "../../components/mdx/MdxTable.astro";
+import Pitfall from "../../components/mdx/Pitfall.astro";
+import LessonProgress from "../../components/svelte/LessonProgress.svelte";
+import Base from "../../layouts/Base.astro";
+import {
+  getLesson,
+  getLessonHeadings,
+  getNeighbors,
+  isTrackId,
+  loadCurriculum,
+  resolveRelated,
+} from "../../lib/curriculum";
+import { getTrack } from "../../lib/tracks";
+
+export function getStaticPaths() {
+  return loadCurriculum().map((lesson) => ({
+    params: { track: lesson.track, slug: lesson.slug },
+  }));
+}
+
+const track = Astro.params.track ?? "";
+const slug = Astro.params.slug ?? "";
+if (!isTrackId(track)) throw new Error(`Content error: unknown track ${track}`);
+
+const lesson = getLesson(track, slug);
+if (!lesson) throw new Error(`Content error: missing lesson ${track}/${slug}`);
+
+const entry = await getEntry(track, slug);
+if (!entry) throw new Error(`Content error: missing collection entry ${track}/${slug}`);
+
+const { Content } = await render(entry);
+const info = getTrack(track);
+const headings = getLessonHeadings(lesson);
+const related = resolveRelated(lesson);
+const neighbors = getNeighbors(lesson);
+const sameTrack = related.filter((item) => item.track === track);
+const crossTrack = related.filter((item) => item.track !== track);
+const crossLabel = track === "bscp" ? "Related Security+ ideas" : "Related BSCP notes";
+---
+
+<Base title={lesson.title} description={lesson.summary}>
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
+    <article>
+      <p class="text-sm text-muted">
+        <a href={info.href} class="underline decoration-line underline-offset-4">{info.shortTitle}</a>
+        <span aria-hidden="true"> · </span>
+        {lesson.family}
+      </p>
+      <h1 class="mt-3 max-w-3xl font-display text-5xl leading-none">{lesson.title}</h1>
+      <p class="mt-4 max-w-2xl text-lg leading-8">{lesson.summary}</p>
+      <p class="mt-3 text-sm text-muted">
+        {lesson.minutes} min read
+        {lesson.academy ? ` · Academy topic: ${lesson.academy}` : ""}
+        {lesson.status === "outline" ? " · Outline, not a finished note" : ""}
+      </p>
+      <LessonProgress client:load track={lesson.track} slug={lesson.slug} title={lesson.title} />
+      {
+        lesson.status === "outline" ? (
+          <p class="mt-4 rounded-2xl border border-warn bg-warn-soft px-4 py-3 text-sm">
+            Outline. This module is on the map so you can track it. The page below is a writing
+            checklist, not finished study material.
+          </p>
+        ) : null
+      }
+      <section class="mt-8 rounded-2xl border border-line bg-card px-4 py-4" aria-labelledby="objectives-heading">
+        <h2 id="objectives-heading" class="text-sm font-semibold uppercase tracking-[0.12em] text-muted">
+          Objectives
+        </h2>
+        <ul class="mt-3 list-disc space-y-2 pl-5">
+          {lesson.objectives.map((objective) => <li>{objective}</li>)}
+        </ul>
+      </section>
+      {
+        headings.length > 0 ? (
+          <details class="mt-6 rounded-2xl border border-line bg-card px-4 py-3 lg:hidden">
+            <summary class="cursor-pointer text-sm font-medium">On this page</summary>
+            <ol class="mt-3 space-y-2 text-sm">
+              {headings.map((heading) => (
+                <li>
+                  <a href={`#${heading.id}`} class="text-muted hover:text-ink">
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        ) : null
+      }
+      <div class="study-prose mt-8 max-w-3xl">
+        <Content components={{ Lab, Defend, Pitfall, Exam, a: MdxLink, table: MdxTable }} />
+      </div>
+      {
+        sameTrack.length > 0 ? (
+          <section class="mt-10" aria-labelledby="more-on-this-track">
+            <h2 id="more-on-this-track" class="font-display text-3xl">
+              More on this track
+            </h2>
+            <ul class="mt-3 space-y-2">
+              {sameTrack.map((item) => (
+                <li>
+                  <a href={item.href} class="block rounded-xl border border-line px-3 py-3 hover:border-accent">
+                    <span class="font-medium">{item.title}</span>
+                    <span class="mt-1 block text-sm text-muted">{item.summary}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null
+      }
+      {
+        crossTrack.length > 0 ? (
+          <section class="mt-10" aria-labelledby="related-other-track">
+            <h2 id="related-other-track" class="font-display text-3xl">
+              {crossLabel}
+            </h2>
+            <ul class="mt-3 space-y-2">
+              {crossTrack.map((item) => (
+                <li>
+                  <a href={item.href} class="block rounded-xl border border-line px-3 py-3 hover:border-accent">
+                    <span class="font-medium">{item.title}</span>
+                    <span class="mt-1 block text-sm text-muted">{item.summary}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null
+      }
+      <nav aria-label="Curriculum" class="mt-10 grid gap-3 sm:grid-cols-2">
+        {
+          neighbors.previous ? (
+            <a
+              href={neighbors.previous.href}
+              class="rounded-2xl border border-line bg-card px-4 py-3 hover:border-accent"
+            >
+              <span class="text-xs uppercase tracking-[0.14em] text-muted">Previous</span>
+              <span class="mt-1 block font-medium">{neighbors.previous.title}</span>
+              <span class="text-sm text-muted">{neighbors.previous.family}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          neighbors.next ? (
+            <a
+              href={neighbors.next.href}
+              class="rounded-2xl border border-line bg-card px-4 py-3 text-right hover:border-accent sm:col-start-2"
+            >
+              <span class="text-xs uppercase tracking-[0.14em] text-muted">Next</span>
+              <span class="mt-1 block font-medium">{neighbors.next.title}</span>
+              <span class="text-sm text-muted">{neighbors.next.family}</span>
+            </a>
+          ) : null
+        }
+      </nav>
+    </article>
+    <aside class="hidden lg:block">
+      <div class="sticky top-24 space-y-4">
+        {
+          headings.length > 0 ? (
+            <nav aria-label="On this page" class="rounded-2xl border border-line bg-card px-4 py-4">
+              <p class="text-xs uppercase tracking-[0.14em] text-muted">On this page</p>
+              <ol class="mt-3 space-y-2 text-sm">
+                {headings.map((heading) => (
+                  <li>
+                    <a href={`#${heading.id}`} class="text-muted hover:text-ink">
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          ) : null
+        }
+      </div>
+    </aside>
+  </div>
+</Base>

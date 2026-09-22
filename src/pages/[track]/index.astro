@@ -1,0 +1,50 @@
+---
+import { getCollection } from "astro:content";
+
+import TrackHub from "../../components/vue/TrackHub.vue";
+import Base from "../../layouts/Base.astro";
+import { isTrackId } from "../../lib/curriculum";
+import { formatLicenseDate } from "../../lib/study-config";
+import { getTrack } from "../../lib/tracks";
+import { TRACK_IDS } from "../../lib/types";
+
+export async function getStaticPaths() {
+  return TRACK_IDS.map((track) => ({ params: { track } }));
+}
+
+const track = Astro.params.track ?? "";
+if (!isTrackId(track)) {
+  throw new Error(`Content error: unknown track ${track}`);
+}
+
+const info = getTrack(track);
+const entries = await getCollection(track);
+const lessons = entries
+  .map((entry) => ({
+    slug: entry.id,
+    href: `/${track}/${entry.id}`,
+    title: entry.data.title,
+    summary: entry.data.summary,
+    family: entry.data.family,
+    order: entry.data.order,
+    status: entry.data.status,
+    minutes: entry.data.minutes,
+  }))
+  .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+
+const detail =
+  track === "bscp"
+    ? `${info.detail} Planning date for Burp Pro access: ${formatLicenseDate()}.`
+    : info.detail;
+---
+
+<Base title={info.shortTitle} description={info.summary}>
+  <TrackHub
+    client:load
+    track={track}
+    title={info.shortTitle}
+    detail={detail}
+    families={info.families.map((family) => ({ name: family.name, blurb: family.blurb }))}
+    lessons={lessons}
+  />
+</Base>
