@@ -40,6 +40,11 @@ export default function AboutPage() {
         marked it yet. The BSCP reminder uses a planning date of {formatLicenseDate()}.
       </p>
       <ProgressTools />
+      <h2>Theme</h2>
+      <p>
+        The header has a Light / Dark control. The choice is saved in this browser. Until you
+        pick one, the desk follows your system theme.
+      </p>
       <h2>Keyboard</h2>
       <ul>
         <li>

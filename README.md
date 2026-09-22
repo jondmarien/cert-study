@@ -231,6 +231,12 @@ The message names the file. Usual causes: a `family` string that does not match 
 </details>
 
 <details>
+<summary><b>How do I switch light and dark?</b></summary>
+
+The header has a Light / Dark control. The choice is stored in this browser as `marien-study-theme`. Until you pick one, the desk follows the system theme.
+</details>
+
+<details>
 <summary><b>Where did my progress go?</b></summary>
 
 It is in this browser, under `marien-study-progress`. Another browser, a private window, or clearing site data starts you over. The About page can clear it on purpose.
