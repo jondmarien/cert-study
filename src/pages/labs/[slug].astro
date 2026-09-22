@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from "astro:content";
+
+import MdxLink from "../../components/mdx/MdxLink.astro";
+import Base from "../../layouts/Base.astro";
+import { getLesson } from "../../lib/curriculum";
+
+export async function getStaticPaths() {
+  const labs = await getCollection("labs");
+  return labs.map((lab) => ({ params: { slug: lab.id } }));
+}
+
+const slug = Astro.params.slug ?? "";
+const labs = await getCollection("labs");
+const lab = labs.find((entry) => entry.id === slug);
+if (!lab) throw new Error(`Content error: missing lab ${slug}`);
+
+const lesson = getLesson(lab.data.lesson.track, lab.data.lesson.slug);
+if (!lesson) throw new Error(`Content error: lab ${slug} lesson disappeared`);
+
+const { Content } = await render(lab);
+---
+
+<Base title={lab.data.title} description={lab.data.summary}>
+  <article class="study-prose mx-auto max-w-3xl">
+    <p class="font-sans text-xs uppercase tracking-[0.16em] text-muted">{lab.data.topic}</p>
+    <h1 class="mt-2 font-display text-5xl leading-none">{lab.data.title}</h1>
+    <p>{lab.data.summary}</p>
+    <p>
+      Concept note:
+      <a href={lesson.href}>{lesson.title}</a>
+    </p>
+    <Content components={{ a: MdxLink }} />
+  </article>
+</Base>

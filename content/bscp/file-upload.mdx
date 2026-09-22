@@ -58,3 +58,11 @@ Store files outside the web root, under a generated name, with an allow-listed t
 Believing the browser's file picker restricted the type. Stopping once the extension was rewritten. Ignoring the retrieval URL. Forgetting that a "harmless" format can still be a bomb for a parser. Testing uploads against real sites because the control is easy to click.
 
 </Pitfall>
+
+## From the learning path
+
+The January 2026 learning-path notes stress that the usual failure is uneven checking, not a total absence of it.
+
+One route inspects the upload and another does not. One host only stores the bytes and another is willing to run them. A block list of "dangerous" suffixes misses a name the server still treats as code, and it disagrees with itself when the name has more than one suffix. The client-supplied type and the client-supplied extension are both chosen by the client.
+
+Prefer an allow list, a look at the file's own header bytes, a generated name, a size limit, and storage outside the web root. Apply that set on every upload and on every place that later serves the file. Execution of an uploaded script is the severe case. This desk does not keep sample scripts. The Academy lab is where that exercise lives. Just storing a huge file, or handing a hostile file to a parser, can be enough on its own.

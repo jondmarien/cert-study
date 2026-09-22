@@ -1,32 +1,67 @@
 ---
 title: WebSockets
 family: Client-side
-order: 1060
-status: outline
-minutes: 8
-summary: Outline only. A WebSocket is a long-lived channel that still needs origin checks and authorization on each message.
+order: 310
+status: ready
+minutes: 15
+summary: A WebSocket is a long-lived channel. The handshake still needs an origin check, and each message still needs authorization.
 objectives:
-  - Explain the handshake versus the messages that follow
-  - Note which existing topics still apply after the upgrade
+  - Separate the HTTP handshake from the messages that follow
+  - Explain cross-site WebSocket hijacking as a two-way session ride
+  - Apply the same input and authorization rules to each message
+academy: WebSockets
 related:
   - track: bscp
     slug: cors
   - track: bscp
     slug: access-control
+  - track: bscp
+    slug: csrf
 tags:
-  - outline
   - websockets
-academy: WebSockets
+  - browser
 ---
 
-## TODO
+## Core idea
 
-Concept note only. No message exploits.
+A WebSocket starts as an HTTP request that asks to upgrade. After the server agrees, both sides send frames on that connection instead of new HTTP requests. Chat, dashboards, and live prices use this because the server can speak without waiting for the next page load.
 
-## Checklist
+The session is usually decided on the handshake. Cookies go with that first request, and later frames ride the same connection. A CSRF token on some other HTTP route does not automatically cover those frames. Anything you would have checked on a normal request still needs a check: who may open the socket, and who may perform each action inside it.
 
-- The handshake is an HTTP upgrade. After that, frames are not ordinary requests, so CSRF tokens on later HTTP routes do not automatically cover messages.
-- The browser sends an `Origin` on the handshake. The server should check it. That is the CORS idea applied to a different channel.
-- Each message still needs authorization. A socket opened by a valid user can still ask for another user's object.
-- Proxy history shows the handshake. Burp can show the frames in the WebSocket history. The finished note should say which view you use for which half.
-- Encryption is `wss` versus a clear socket. That is transport protection, not authorization.
+`wss` is the socket over TLS. That protects the bytes in transit. It does not decide who may connect, and it does not validate a message.
+
+## What to look for
+
+- The handshake in Proxy history: `Origin`, the session cookie, and any value that is not automatically attached the way a cookie is
+- `Sec-WebSocket-Key`, which is there so caches do not mix up connections. It is not a session secret
+- A socket URL built from user input. The endpoint should be chosen by the application
+- Frames in WebSocket history that carry an identifier, a command, or text other users will see
+- The same bug classes as HTTP, arriving in a frame: a query, a document parser, or HTML another browser will render
+
+Cross-site WebSocket hijacking is CSRF on the handshake, with a reply channel. Another site can ask the victim's browser to open the socket. If the server trusts the cookie and does not check `Origin`, it accepts a connection the victim did not mean to open. Unlike a classic forged form, the other site can then send frames and read the frames that come back: actions and data, for as long as the socket stays up.
+
+<Lab>
+
+In the lab, find the upgrade request in Proxy history. Write down whether `Origin` is checked, whether the only session proof is a cookie, and that `Sec-WebSocket-Key` is not that proof.
+
+Then open WebSocket history and read one ordinary frame. Note whether it selects an object or carries text another user will see. Compare that to the HTTP topic that matches the data: access control, injection, or a client-side rendering bug.
+
+Do not host a page that opens a socket to anything except the Academy lab.
+
+</Lab>
+
+<Defend>
+
+Allow-list `Origin` on the handshake and reject the rest. Bind the handshake to a value the browser will not attach automatically, the way a CSRF token works for a form. Authorize every message, not only the connect. Treat frame data as untrusted in both directions. Use `wss`. Keep the socket URL fixed in the application. The services behind a message still do their own authentication and authorization. The socket is not a trust boundary you can skip.
+
+</Defend>
+
+<Pitfall>
+
+Assuming later HTTP CSRF defenses cover the frames. Treating `Sec-WebSocket-Key` as authentication. Stopping at the handshake and never reading a message. Calling `wss` the authorization control. Forgetting that a socket opened by a real user can still ask for someone else's object.
+
+</Pitfall>
+
+## From the learning path
+
+The January 2026 learning-path notes describe the handshake, the message channel, and cross-site hijacking in those words. They also note that a blind issue reached through a frame may only show up as an out-of-band lookup, which is the Collaborator idea applied to this channel, and that text forwarded to other users can become a client-side bug. The defensive list in those notes matches this page: TLS, a fixed endpoint, a protected handshake, and untrusted data in both directions.

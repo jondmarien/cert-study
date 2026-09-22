@@ -1,32 +1,65 @@
 ---
 title: Race conditions
 family: Server-side
-order: 1020
-status: outline
-minutes: 8
-summary: Outline only. A race is two requests that both pass a check before either update lands.
+order: 225
+status: ready
+minutes: 14
+summary: A race is a check-then-act gap. Two requests both pass a limit before either update lands.
 objectives:
-  - Describe a check-then-act gap in one sentence
-  - Note the lab evidence to record once the write-up exists
+  - Describe a check-then-act window in one sentence
+  - Separate a wrong business rule from a right rule with a bad window
+  - Name the controls that make the check and the update one step
+academy: Race conditions
 related:
   - track: bscp
     slug: business-logic
   - track: security-plus
     slug: resilience
+  - track: bscp
+    slug: access-control
 tags:
-  - outline
   - race
-academy: Race conditions
+  - logic
 ---
 
-## TODO
+## Core idea
 
-Finished notes should stay conceptual. No timing scripts.
+A limit overrun is a time-of-check to time-of-use gap. The application reads a fact, decides, then writes. Between the read and the write the fact is still the old one. A second request that arrives in that window sees the same old fact and makes the same decision.
 
-## Checklist
+The usual story is a single-use code. Check whether it has been used, apply it, then mark it used. One request after another is fine: the second sees the mark. Two requests that overlap both see "unused" and both apply the code. The rule was right. The window was wrong. That is the difference from a business-logic flaw, where the rule itself is missing even for a single request.
 
-- The gap is check-then-act: the application reads a balance, a coupon, or a single-use token, then writes, and a second request does the same before the write is visible.
-- Evidence in a lab is two responses that both claim success, followed by a state that should have allowed only one.
-- Burp's Repeater can send a group of requests in parallel in current versions. The note should say when parallel sends are the right observation, and that this is lab-only.
-- Defenders use a transaction or a single-use constraint in the database, not a hope that requests arrive slowly.
-- Mention the difference between a logic flaw (the rule is wrong) and a race (the rule is right and the window is wrong).
+The same window shows up as a gift card redeemed twice, a balance that goes below zero, a rating counted twice, a single-use challenge accepted twice, or a login limit that only counts after the attempt finishes. None of those need a special payload. They need two successes where the state should have allowed one.
+
+## What to look for
+
+- A single-use token, code, or coupon
+- A balance, quota, or inventory count read in one step and written in another
+- A rate limit that increments after the protected action
+- Two responses that both claim success, followed by a state that should have allowed only one
+- A database update that is not tied to the check in the same transaction
+
+<Lab>
+
+Pick one single-use action the lab provides. Send it once and record the state afterward. That is the baseline.
+
+Put that same request in a Repeater group and send the group together, the way the Academy exercise asks. Count how many responses claim success, then look at the state the limit was supposed to protect. Two successes mean the check and the update were separate steps.
+
+Do not script a timing loop into this repo. The lab's parallel send is the observation. Stay on the lab host.
+
+</Lab>
+
+<Defend>
+
+Make the check and the update one database step: a transaction, a row lock, or an atomic compare-and-set. An idempotency key gives each action a unique token the server rejects the second time it sees it. Sensitive operations can be queued so the second request waits until the first write is visible. A burst of identical requests from one session is a signal to log, not the fix. The fix is that the second request cannot pass the check.
+
+</Defend>
+
+<Pitfall>
+
+Calling every double-submit a race. If one slow request would also break the rule, it is business logic. Calling a race "secure" because it is hard to hit by hand. Hoping users will click slowly. Treating a rate limit in the application as a lock when two workers both read the old count.
+
+</Pitfall>
+
+## From the learning path
+
+The February 2026 learning-path notes name this TOCTOU and list the single-use cases above. They also note that the window can be only a few milliseconds wide, so a careful manual click often misses it, and that a lab tool which delivers the group together is how you observe the collision. The defensive list in those notes is the same one in this page: atomic updates, locks, idempotency keys, and less trust that requests will arrive one at a time.

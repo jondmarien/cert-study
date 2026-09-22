@@ -1,0 +1,25 @@
+---
+title: Authentication labs
+order: 40
+topic: Authentication
+summary: Authentication labs separate a wrong password, a missing account, and a guess that never talks to the login.
+lesson:
+  track: bscp
+  slug: authentication-failures
+---
+
+## The figure
+
+![Authentication asks who you are. Authorization asks what you may do. Brute force, a dictionary, and stolen password pairs are three different guessing ideas.](/labs/authentication-checks.png)
+
+The Quartz note uses this picture for the split. Authentication is the visible check. Authorization is usually invisible, and it comes second. The bottom row is why a lockout, a breached-password check, and MFA are different controls.
+
+## What those labs were comparing
+
+Map the lab login and the reset flow with the lab's own accounts. In Repeater, send one known-good attempt and one known-bad attempt. Compare status, body text, and timing.
+
+- The same error for a missing user and a wrong password, or two different errors.
+- A lockout that freezes one account, and a spray that tries one common password across many accounts.
+- A reset token you can predict from something the lab already showed you, such as the username.
+
+Stop at the short list the lab gives you. Do not build a dictionary in this repo. The vault frames of a long guessing run stay in the vault.

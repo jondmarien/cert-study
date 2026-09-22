@@ -57,3 +57,9 @@ Prefer an opaque identifier that the server maps to a stored path. If you must a
 Assuming a numeric id cannot be a path. Stopping at the first filter. Calling a 404 proof that traversal is impossible. Forgetting the write side: a traversal that writes is a different impact from one that reads. Mixing this topic up with SSRF. One opens a path on the local system. The other makes a network request.
 
 </Pitfall>
+
+## From the learning path
+
+The December 2025 learning-path notes state the fix as two layers, after saying the best fix is to stop handing a user string to a filesystem call.
+
+When a name really is required, check it first against an allow list or a tight set of permitted characters. Then join it to the base directory, ask the platform for the canonical path, and confirm that path still begins inside the base directory. Filtering a fragment and then opening the original string is the miss. On Windows, a parent reference can be written with a backslash as well as a slash. The canonical path is what sees both. A read of a credential file and a write that changes application behavior are different impacts of the same join.

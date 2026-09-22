@@ -148,6 +148,13 @@ body {
   margin-top: 0.35rem;
 }
 
+.study-prose img {
+  width: min(100%, 42rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--card);
+}
+
 .study-prose code {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.84em;

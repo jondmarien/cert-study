@@ -60,3 +60,17 @@ Do not fetch arbitrary user-supplied locations. If the feature must fetch, allow
 Calling every URL parameter SSRF without showing the server made the request. Scanning internal addresses outside the lab. Treating a text filter as a completed defense. Confusing a browser-side load (the user's browser fetched it) with a server-side fetch. Forgetting redirects, where the first destination is allowed and the second is not.
 
 </Pitfall>
+
+## From the learning path
+
+The February 2026 learning-path notes separate the obvious parameter from the fetches that do not look like one.
+
+Partial input is enough. If the user supplies only a hostname or only a path, and the server builds the rest of the URL, the destination is still chosen by that input.
+
+Some parsers fetch addresses that appear inside a document. XML external entities are the usual case, and that bug is also the XXE note. The fetch is still SSRF when the field the user filled in was a document, not a URL box.
+
+Analytics that visit the Referer are a fetch the application code may not contain. The header is chosen by the client. If a product looks that address up from the server, the same class of bug is sitting in a dependency. Treat that header as untrusted, and do not let logging software issue the request.
+
+Blind SSRF is the case where the response hides the result and the evidence is that a lookup happened. Collaborator is the observation for that case, as the lab section says. The impact is still the server's network position, not a catalog of internal addresses.
+
+String block lists fail because the check and the parser disagree, and because a redirect can leave an allowed first hop for a second hop nobody rechecked. Parse first, allow-list the result, and check again after each redirect. The Academy labs own the specific filter exercises.

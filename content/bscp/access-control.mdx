@@ -63,3 +63,15 @@ Every object access checks the caller's identity against an allow rule on the se
 Testing while logged out and calling a public page an access-control pass. Changing the identifier and the cookie in one edit. Concluding the app is safe because identifiers are long. Trusting the UI: if the button is missing, the request may still exist in history from another role. Forgetting that a list endpoint and a detail endpoint can enforce different rules.
 
 </Pitfall>
+
+## From the learning path
+
+The December 2025 learning-path notes put the three checks in order, which this page had split across topics.
+
+Authentication says who the session is. Session management says which later requests belong to that person. Access control says whether this request's action is allowed. A successful login does not answer the third question.
+
+Vertical gaps often look like a route the interface only links for an administrator, with no check on the route itself. The path can be hard to guess and still fail, because the script that draws the admin link is shipped to every browser. A hard-to-guess path is obscurity. A `robots.txt` Disallow entry is a hint that a path exists, not a lock on it.
+
+Some applications store the role where the browser will send it back: a hidden field, a cookie, or a query flag. The decision then belongs to the client.
+
+A horizontal gap becomes vertical when the other account outranks the caller. Reading a peer's record is horizontal. Landing on an administrator through the same kind of identifier is vertical. A long random identifier is harder to guess than a counter. It is still not a check when a page the caller can already open displays that value.

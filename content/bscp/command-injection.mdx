@@ -57,3 +57,7 @@ Call the program with an argument list and no shell. Allow-list hostnames or fil
 Treating this as SQL injection with different keywords. Assuming a removed character means the shell is safe. Forgetting quoting rules differ across operating systems, which is another reason not to build shell strings. Testing command injection against any host other than the lab. Storing a working command in your notes.
 
 </Pitfall>
+
+## From the learning path
+
+The January 2026 learning-path notes put the fix in one sentence: do not start a shell with text the user supplied. If a command really is required, pass an argument list the shell will not parse, and allow-list the values. Least privilege and a log of unexpected process starts are the backstop. Those notes also list system commands to run after a bug is found. That list stays out of this desk. The Academy lab has the exercise.

@@ -1,0 +1,23 @@
+---
+title: Web LLM labs
+order: 90
+topic: Client-side
+summary: LLM labs map every input the model reads and every tool it can call. The solved chat transcript stays in the vault.
+lesson:
+  track: bscp
+  slug: web-llm
+---
+
+## What those labs were comparing
+
+The Quartz notes for this topic include a long chat transcript and many screenshots of a solved Academy lab. Those frames show the model being talked into a privileged tool call, so they are not republished here.
+
+Before typing, write the map:
+
+- The direct box, where a person types.
+- Every indirect source: a page, an email, a review, a file, or a tool result the model is asked to read.
+- Every tool, and whose credentials that tool uses.
+
+Then follow the lab's exercise. Afterward, the note should say which input carried the instruction, which tool ran, and which server-side check was missing. A sentence in the system prompt is not that check. The service behind the tool still has to authorize the caller.
+
+The concept figure in the vault is a worked example of retrieved mail becoming a tool call. Treat that as the class of bug: untrusted text in, a privileged action out. Keep the example inside the lab.
